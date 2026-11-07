@@ -23,3 +23,18 @@ for slug in ('sm64', 'celeste', 'smb1'):
     game = get('games/' + slug)
     gid = game['id']
     categories = get(f'games/{gid}/categories')
+    levels = get(f'games/{gid}/levels')
+    runs_by_id = {}
+    for category in categories:
+        category_runs = get(f'runs?game={gid}&category={category["id"]}&status=verified&max=200&embed=players')
+        for run in category_runs:
+            runs_by_id[run['id']] = run
+        print(slug, category['name'], len(category_runs), flush=True)
+        time.sleep(0.1)
+    runs = list(runs_by_id.values())
+    data['games'].append({'game': game, 'categories': categories, 'levels': levels, 'runs': runs})
+    print(slug, len(categories), len(levels), len(runs), flush=True)
+platform_ids = {run['system']['platform'] for pack in data['games'] for run in pack['runs'] if run.get('system',{}).get('platform')}
+data['platforms'] = {pid:get('platforms/'+pid) for pid in sorted(platform_ids)}
+OUT.write_text(json.dumps(data, ensure_ascii=False), encoding='utf-8')
+print(OUT)
