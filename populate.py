@@ -53,3 +53,33 @@ def main():
                 name=u['names']['international'] or u['id']
                 loc=u.get('location') or {}; country=(loc.get('country') or {}).get('code')
                 put('INSERT IGNORE INTO users(user_id,username,display_name,joined_at,is_admin,active,country_code) VALUES(%s,%s,%s,%s,0,1,%s)',(u['id'],(name[:90]+'_'+u['id'])[:100],name[:150],stamp(u.get('signup')),country))
+            values=json.dumps(r.get('values') or {},sort_keys=True,separators=(',',':'))
+            variant=hashlib.sha1(values.encode()).hexdigest()[:12] if values!='{}' else 'standard'
+            key=(cid,r.get('level'),pid,variant)
+            if key not in boards:
+                code=f'{slug}:{cid}:{r.get("level") or "full"}:{pid}:{variant}'
+                put('INSERT INTO leaderboard(board_code,variant_code,variant_description,timing_method,active,category_id,platform_id,level_id) VALUES(%s,%s,%s,%s,1,%s,%s,%s)',(code,variant,values[:255],'realtime',cid,pid,r.get('level')))
+                bid=cur.lastrowid; boards[key]=bid
+                put('INSERT INTO board_rule_version VALUES(%s,1,%s,%s,%s)',(bid,c.get('rules') or 'See source game rules.', '2015-01-01 00:00:00','2015-01-01 00:00:00'))
+            bid=boards[key]
+            submitted=stamp(r.get('submitted') or r.get('date-time'))
+            while (submitted,bid) in used_rule_keys:
+                submitted=(dt.datetime.fromisoformat(submitted)+dt.timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')
+            used_rule_keys.add((submitted,bid))
+            put('INSERT INTO run_rule VALUES(%s,%s,1)',(submitted,bid))
+            put('INSERT INTO run VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)',(r['id'],r.get('date') or submitted[:10],duration,r.get('comment'),uid,uid,submitted,bid,r.get('weblink')))
+            for n,link in enumerate(links[:10],1):
+                put('INSERT INTO evidence_link VALUES(%s,%s,%s,%s,NULL)',(r['id'],n,link['uri'],'video'))
+            examiner=r['status'].get('examiner') or 'team5_admin'
+            if examiner:
+                put('INSERT IGNORE INTO users(user_id,username,display_name,joined_at,is_admin,active) VALUES(%s,%s,%s,%s,0,1)',(examiner,'moderator_'+examiner,'Moderator '+examiner,'2015-01-01 00:00:00'))
+                put('INSERT IGNORE INTO authorizes VALUES(%s,%s,%s)',(examiner,gid,'REVIEW_RUNS'))
+                put('INSERT INTO review_event VALUES(%s,1,%s,%s,NULL,%s)',(r['id'],stamp(r['status'].get('verify-date'),submitted),'verified',examiner))
+            count+=1
+        for perm in ('REVIEW_RUNS','EDIT_RULES','MANAGE_GAME'):
+            put('INSERT IGNORE INTO authorizes VALUES(%s,%s,%s)',('team5_admin',gid,perm))
+        print(slug, 'boards',len(boards),flush=True)
+    con.commit(); con.close()
+    print('Imported',count,'source runs')
+
+if __name__=='__main__': main()
