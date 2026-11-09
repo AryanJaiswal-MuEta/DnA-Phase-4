@@ -23,3 +23,33 @@ def main():
     for pid in platform_ids:
         meta=DATA['platforms'][pid]
         put('INSERT INTO platform(platform_id,name,manufacturer) VALUES(%s,%s,%s)', (pid,meta['name'],None))
+    count = 0
+    for pack in DATA['games']:
+        g = pack['game']; gid=g['id']; slug=g['abbreviation']
+        put('INSERT INTO game VALUES(%s,%s,%s,%s,%s,%s,1)', (gid,slug,g['names']['international'],g['names'].get('japanese'),g.get('released'),g.get('weblink')))
+        for pid in platform_ids:
+            if any(r['system'].get('platform')==pid for r in pack['runs']):
+                put('INSERT INTO supports VALUES(%s,%s)',(gid,pid))
+        cats={}
+        for c in pack['categories']:
+            kind='per_level' if c['type']=='per-level' else 'full_game'
+            cats[c['id']]=c
+            put('INSERT INTO category VALUES(%s,%s,%s,1,%s)',(c['id'],c['name'],kind,gid))
+        for i,l in enumerate(pack['levels'],1):
+            put('INSERT INTO level VALUES(%s,%s,%s,%s)',(l['id'],l['name'],i,gid))
+        boards={}; used_rule_keys=set()
+        for r in pack['runs']:
+            cid=r['category']; c=cats.get(cid)
+            if not c or (c['type']=='per-level') != bool(r.get('level')): continue
+            links=(r.get('videos') or {}).get('links') or []
+            if not links: continue
+            players=r.get('players',{}).get('data',[])
+            if len(players)!=1 or players[0].get('rel')!='user': continue
+            player=players[0]; uid=player['id']; pid=r['system'].get('platform')
+            if not pid: continue
+            duration=round(float(r['times']['primary_t'])*1000)
+            if duration<=0: continue
+            for u in [player]:
+                name=u['names']['international'] or u['id']
+                loc=u.get('location') or {}; country=(loc.get('country') or {}).get('code')
+                put('INSERT IGNORE INTO users(user_id,username,display_name,joined_at,is_admin,active,country_code) VALUES(%s,%s,%s,%s,0,1,%s)',(u['id'],(name[:90]+'_'+u['id'])[:100],name[:150],stamp(u.get('signup')),country))
