@@ -43,3 +43,43 @@ def variant_label(category_id, description):
     definitions=variable_metadata().get(category_id,{})
     parts=[]
     for var_id,value_id in selected.items():
+        variable=definitions.get(var_id,{})
+        name=variable.get('name',var_id)
+        value=variable.get('values',{}).get(value_id,value_id)
+        parts.append(f'{name}: {value}')
+    return ' · '.join(parts)
+
+def format_duration(milliseconds):
+    seconds, milli=divmod(milliseconds,1000)
+    minutes, second=divmod(seconds,60)
+    hours, minute=divmod(minutes,60)
+    return f'{hours}:{minute:02d}:{second:02d}.{milli:03d}' if hours else f'{minute}:{second:02d}.{milli:03d}'
+
+@app.get('/preview')
+def preview():
+    data=json.loads(Path(__file__).with_name('source_data.json').read_text(encoding='utf-8'))
+    term=request.args.get('q','').casefold()
+    games=[p for p in data['games'] if term in p['game']['names']['international'].casefold() or term in p['game']['abbreviation'].casefold()]
+    return page('''<p class="msg">Preview using saved source data. The MySQL-backed features need a running database.</p><h1>Explore games</h1><p class="muted">Public Speedrun.com data, curated for the database project.</p><form><input name="q" value="{{term}}" placeholder="Search game title or slug"><button>Search</button></form><div class="grid">{% for p in games %}<div class="card"><h2><a href="{{url_for('preview_game',slug=p.game.abbreviation)}}">{{p.game.names.international}}</a></h2><p>{{p.game.released}} · {{p.categories|length}} categories</p><small>{{p.game.abbreviation}}</small></div>{% endfor %}</div>''',games=games,term=request.args.get('q',''),preview=True)
+
+@app.get('/preview/game/<slug>')
+def preview_game(slug):
+    data=json.loads(Path(__file__).with_name('source_data.json').read_text(encoding='utf-8'))
+    pack=next((p for p in data['games'] if p['game']['abbreviation']==slug),None)
+    if not pack: abort(404)
+    cats={c['id']:c for c in pack['categories']}
+    counts={cid:sum(r['category']==cid for r in pack['runs']) for cid in cats}
+    return page('''<p><a href="/preview">← Games</a></p><h1>{{p.game.names.international}}</h1><p><a href="{{p.game.weblink}}">View on Speedrun.com</a></p><h2>Categories</h2><table><tr><th>Category</th><th>Type</th><th>Sample runs</th></tr>{% for c in p.categories %}<tr><td><a href="{{url_for('preview_category',slug=p.game.abbreviation,cid=c.id)}}">{{c.name}}</a></td><td>{{c.type}}</td><td>{{counts[c.id]}}</td></tr>{% endfor %}</table>''',p=pack,counts=counts,preview=True)
+
+@app.get('/preview/game/<slug>/category/<cid>')
+def preview_category(slug,cid):
+    data=json.loads(Path(__file__).with_name('source_data.json').read_text(encoding='utf-8'))
+    pack=next((p for p in data['games'] if p['game']['abbreviation']==slug),None)
+    if not pack: abort(404)
+    cat=next((c for c in pack['categories'] if c['id']==cid),None)
+    if not cat: abort(404)
+    rows=[]
+    for r in pack['runs']:
+        if r['category']!=cid: continue
+        players=r.get('players',{}).get('data',[])
+        if not players: continue
