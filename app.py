@@ -153,3 +153,38 @@ def reports():
 def submit():
     if request.method=='POST':
         con=db()
+        try:
+            with con.cursor() as c:
+                board_id=int(request.form['board_id']); name=request.form['runner'].strip(); ms=int(request.form['duration_ms']); evidence=request.form['evidence'].strip()
+                if not name or ms<=0 or urlparse(evidence).scheme not in ('http','https'): raise ValueError('Provide a runner, positive time in milliseconds, and HTTP(S) evidence.')
+                c.execute('SELECT board_id FROM leaderboard WHERE board_id=%s AND active=1',(board_id,))
+                if not c.fetchone(): raise ValueError('Choose an active board.')
+                c.execute('SELECT user_id FROM users WHERE username=%s',(name,)); user=c.fetchone()
+                if user: uid=user['user_id']
+                else:
+                    uid='local_'+uuid.uuid4().hex[:20]
+                    c.execute('INSERT INTO users(user_id,username,display_name,joined_at,is_admin,active) VALUES(%s,%s,%s,NOW(),0,1)',(uid,name,name))
+                rid='local_'+uuid.uuid4().hex[:20]
+                c.execute('SELECT MAX(version_no) version_no FROM board_rule_version WHERE board_id=%s AND effective_at<=NOW()',(board_id,)); version=c.fetchone()['version_no']
+                if not version: raise ValueError('This board has no effective rules.')
+                submitted=datetime.now().replace(microsecond=0)
+                c.execute('SELECT 1 FROM run_rule WHERE submitted_at=%s AND board_id=%s',(submitted,board_id))
+                while c.fetchone():
+                    from datetime import timedelta
+                    submitted+=timedelta(seconds=1)
+                    c.execute('SELECT 1 FROM run_rule WHERE submitted_at=%s AND board_id=%s',(submitted,board_id))
+                c.execute('INSERT INTO run_rule VALUES(%s,%s,%s)',(submitted,board_id,version))
+                run_date=date.fromisoformat(request.form['run_date'])
+                c.execute('INSERT INTO run VALUES(%s,%s,%s,NULL,%s,%s,%s,%s,NULL)',(rid,run_date,ms,uid,uid,submitted,board_id))
+                c.execute('INSERT INTO evidence_link VALUES(%s,1,%s,%s,NULL)',(rid,evidence,'video'))
+            con.commit(); flash('Run submitted and awaiting review.'); return redirect(url_for('run_detail',rid=rid))
+        except (ValueError,pymysql.MySQLError) as exc:
+            con.rollback(); flash(str(exc))
+        finally: con.close()
+    boards=query('''SELECT b.board_id,g.title_international,c.name category_name,l.name level_name,p.name platform_name FROM leaderboard b JOIN category c ON c.category_id=b.category_id JOIN game g ON g.game_id=c.game_id LEFT JOIN level l ON l.level_id=b.level_id JOIN platform p ON p.platform_id=b.platform_id WHERE b.active=1 ORDER BY g.title_international,c.name LIMIT 300''')
+    return page('''<section class="page-intro"><span class="eyebrow">SUBMIT / CHASE THE CLOCK</span><h1>Got a time?<br>Put it up.</h1><p class="muted">Send a run to the review queue with a link to its evidence.</p></section><div class="form-layout"><form method="post" class="editor-form"><span class="eyebrow">01 / RUN DETAILS</span><label>Leaderboard <select name="board_id">{% for b in boards %}<option value="{{b.board_id}}">{{b.title_international}} / {{b.category_name}} / {{b.level_name or 'Full game'}} / {{b.platform_name}}</option>{% endfor %}</select></label><label>Runner name <input name="runner" required placeholder="Your display name"></label><label>Duration in milliseconds <input type="number" name="duration_ms" min="1" required placeholder="For example, 5272000"></label><label>Run date <input type="date" name="run_date" value="{{today}}"></label><label>Evidence URL <input type="url" name="evidence" required placeholder="https://..."></label><button>SUBMIT FOR REVIEW ↗</button></form><aside class="form-aside"><span class="eyebrow">HOW IT WORKS</span><div><strong>01</strong><p>Choose the exact leaderboard for your game, category, platform, and settings.</p></div><div><strong>02</strong><p>Enter the time in milliseconds and provide a video or other evidence link.</p></div><div><strong>03</strong><p>The run appears in the queue until a moderator reviews it.</p></div><small>This local demo creates a runner profile from the name you enter.</small></aside></div>''',boards=boards,today=date.today().isoformat())
+
+@app.post('/review/<rid>')
+def review(rid):
+    outcome=request.form.get('outcome'); note=request.form.get('note','').strip()
+    if outcome not in ('verified','rejected') or (outcome=='rejected' and not note): flash('Rejection requires a reason.'); return redirect(url_for('run_detail',rid=rid))
