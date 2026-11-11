@@ -188,3 +188,38 @@ def submit():
 def review(rid):
     outcome=request.form.get('outcome'); note=request.form.get('note','').strip()
     if outcome not in ('verified','rejected') or (outcome=='rejected' and not note): flash('Rejection requires a reason.'); return redirect(url_for('run_detail',rid=rid))
+    con=db()
+    try:
+        with con.cursor() as c:
+            c.execute('''SELECT r.runner_id,r.submitter_id,c.game_id FROM run r JOIN leaderboard b ON b.board_id=r.board_id JOIN category c ON c.category_id=b.category_id WHERE r.run_id=%s FOR UPDATE''',(rid,)); row=c.fetchone()
+            c.execute('SELECT current_status FROM run_status WHERE run_id=%s',(rid,)); status=c.fetchone()
+            if row and status: row['current_status']=status['current_status']
+            if not row or row['current_status']!='new': raise ValueError('Only pending runs can be reviewed.')
+            actor='team5_admin'
+            if actor in (row['runner_id'],row['submitter_id']): raise ValueError('Self-review is forbidden.')
+            c.execute("SELECT 1 FROM authorizes WHERE user_id=%s AND game_id=%s AND permission_code='REVIEW_RUNS'",(actor,row['game_id']))
+            if not c.fetchone(): raise ValueError('Reviewer lacks game permission.')
+            c.execute('INSERT INTO review_event VALUES(%s,1,NOW(),%s,%s,%s)',(rid,outcome,note or None,actor))
+        con.commit(); flash('Review saved.')
+    except (ValueError,pymysql.MySQLError) as exc: con.rollback(); flash(str(exc))
+    finally: con.close()
+    return redirect(url_for('run_detail',rid=rid))
+
+@app.post('/delete/<rid>')
+def delete_run(rid):
+    con=db()
+    try:
+        with con.cursor() as c:
+            c.execute('SELECT submitted_at,board_id FROM run WHERE run_id=%s FOR UPDATE',(rid,)); row=c.fetchone()
+            if not row: raise ValueError('Run missing.')
+            c.execute('SELECT 1 FROM review_event WHERE run_id=%s',(rid,))
+            if c.fetchone(): raise ValueError('Reviewed runs cannot be deleted.')
+            c.execute('DELETE FROM run WHERE run_id=%s',(rid,))
+            c.execute('DELETE FROM run_rule WHERE submitted_at=%s AND board_id=%s',(row['submitted_at'],row['board_id']))
+        con.commit(); flash('Pending run deleted.'); return redirect(url_for('runs'))
+    except (ValueError,pymysql.MySQLError) as exc: con.rollback(); flash(str(exc)); return redirect(url_for('run_detail',rid=rid))
+    finally: con.close()
+
+@app.route('/admin',methods=['GET','POST'])
+def admin():
+    if request.method=='POST':
