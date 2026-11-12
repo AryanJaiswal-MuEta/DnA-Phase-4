@@ -223,3 +223,33 @@ def delete_run(rid):
 @app.route('/admin',methods=['GET','POST'])
 def admin():
     if request.method=='POST':
+        con=db()
+        try:
+            with con.cursor() as c:
+                action=request.form['action']
+                if action=='game':
+                    slug=request.form['slug'].strip(); title=request.form['title'].strip(); cat=request.form['category'].strip(); rules=request.form['rules'].strip()
+                    if not all((slug,title,cat,rules)): raise ValueError('All game fields are required.')
+                    pid=request.form['platform_id']; gid='local_'+uuid.uuid4().hex[:20]; cid='local_'+uuid.uuid4().hex[:20]
+                    c.execute('INSERT INTO game VALUES(%s,%s,%s,NULL,NULL,NULL,1)',(gid,slug,title))
+                    c.execute('INSERT INTO category VALUES(%s,%s,%s,1,%s)',(cid,cat,'full_game',gid))
+                    c.execute('INSERT INTO supports VALUES(%s,%s)',(gid,pid))
+                    c.execute('INSERT INTO leaderboard(board_code,variant_code,variant_description,timing_method,active,category_id,platform_id,level_id) VALUES(%s,%s,%s,%s,1,%s,%s,NULL)',(slug+':standard:'+pid,'standard','Standard','realtime',cid,pid))
+                    bid=c.lastrowid
+                    c.execute('INSERT INTO board_rule_version VALUES(%s,1,%s,NOW(),NOW())',(bid,rules))
+                    for perm in ('REVIEW_RUNS','EDIT_RULES','MANAGE_GAME'): c.execute('INSERT INTO authorizes VALUES(%s,%s,%s)',('team5_admin',gid,perm))
+                elif action=='rules':
+                    bid=int(request.form['board_id']); rules=request.form['rules'].strip()
+                    if not rules: raise ValueError('Rules cannot be empty.')
+                    c.execute('SELECT COALESCE(MAX(version_no),0)+1 next_version FROM board_rule_version WHERE board_id=%s FOR UPDATE',(bid,)); n=c.fetchone()['next_version']
+                    c.execute('INSERT INTO board_rule_version VALUES(%s,%s,%s,NOW(),NOW())',(bid,n,rules))
+                else: raise ValueError('Unknown action.')
+            con.commit(); flash('Change saved.')
+        except (ValueError,pymysql.MySQLError) as exc: con.rollback(); flash(str(exc))
+        finally: con.close()
+        return redirect(url_for('admin'))
+    boards=query('SELECT b.board_id,g.title_international,c.name category_name FROM leaderboard b JOIN category c ON c.category_id=b.category_id JOIN game g ON g.game_id=c.game_id ORDER BY g.title_international,c.name LIMIT 300')
+    platforms=query('SELECT * FROM platform ORDER BY name')
+    return page('''<section class="page-intro"><span class="eyebrow">CONTROL ROOM / DATABASE TOOLS</span><h1>Manage the<br>boards.</h1><p class="muted">Add a game or publish a new version of leaderboard rules.</p></section><div class="admin-grid"><section class="editor-form"><span class="eyebrow">01 / NEW GAME</span><h2>Add game and category</h2><form method="post"><input type="hidden" name="action" value="game"><label>Slug <input name="slug" required></label><label>Title <input name="title" required></label><label>Initial full game category <input name="category" required></label><label>Platform <select name="platform_id">{% for p in platforms %}<option value="{{p.platform_id}}">{{p.name}}</option>{% endfor %}</select></label><label>Rules <textarea name="rules" required></textarea></label><button>CREATE GAME ↗</button></form></section><section class="editor-form"><span class="eyebrow">02 / RULES VERSION</span><h2>Update board rules</h2><form method="post"><input type="hidden" name="action" value="rules"><label>Board <select name="board_id">{% for b in boards %}<option value="{{b.board_id}}">{{b.title_international}} / {{b.category_name}} / {{b.board_id}}</option>{% endfor %}</select></label><label>New rules <textarea name="rules" required></textarea></label><button>PUBLISH VERSION ↗</button></form></section></div>''',boards=boards,platforms=platforms)
+
+if __name__=='__main__': app.run(debug=True,host='127.0.0.1',port=5000)
