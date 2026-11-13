@@ -183,3 +183,4 @@
 .tv-choice:is(:hover,:focus-visible)::before{opacity:1;transform:translate(-5%,-50%) scale(1)}
 .tv-choice strong{font-size:14px}.tv-choice small{font-size:9px}
 .tv-choice>b{font-size:10px}.tv-choice i,.tv-choice em{font-size:12px}
+.tv-preview[src$="celeste-generated.png"]{object-fit:cover}
