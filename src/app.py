@@ -7,12 +7,65 @@ from functools import lru_cache
 from datetime import datetime, date
 from urllib.parse import urlparse
 import pymysql
-from flask import Flask, request, redirect, url_for, flash, render_template_string, abort, jsonify
+from flask import Flask, request, redirect, url_for, flash, render_template_string, abort, jsonify, session
+import hmac
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY','phase4-local-demo-only')
+app.secret_key = os.getenv('SECRET_KEY') or uuid.uuid4().hex
+app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax')
 LOCAL_CREDENTIALS = Path(__file__).with_name('mysql-local') / 'credentials.json'
 PAGE_TEMPLATES = Path(__file__).with_name('templates')
+
+USER_ENDPOINTS = {'home','game','category','board','tv_game','tv_category','tv_board','tv_run','runs','run_detail','reports','submit'}
+
+@app.before_request
+def enforce_login_and_role():
+    endpoint=request.endpoint
+    if endpoint in {'login','logout','static'}:
+        return None
+    role=session.get('role')
+    if role not in {'admin','user'}:
+        return redirect(url_for('login',next=request.full_path if request.query_string else request.path))
+    if endpoint=='submit' and role=='admin':
+        abort(403)
+    if role=='user' and endpoint not in USER_ENDPOINTS:
+        abort(403)
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    error=None
+    if request.method=='POST':
+        username=request.form.get('username','').strip()
+        password=request.form.get('password','')
+        requested_role=request.form.get('role','user')
+        if not username or not password:
+            error='Enter both username and password.'
+        elif requested_role=='admin':
+            admin_username=os.getenv('ADMIN_USERNAME','')
+            admin_password=os.getenv('ADMIN_PASSWORD','')
+            if not admin_username or not admin_password:
+                error='Admin login is not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD before starting the app.'
+            elif hmac.compare_digest(username,admin_username) and hmac.compare_digest(password,admin_password):
+                session.clear(); session.update(role='admin',username=username)
+                return redirect(url_for('home'))
+            else:
+                error='Admin credentials did not match.'
+        elif requested_role=='user':
+            session.clear(); session.update(role='user',username=username)
+            target=request.args.get('next','')
+            if target.startswith('/') and not target.startswith('//'):
+                return redirect(target)
+            return redirect(url_for('home'))
+        else:
+            error='Choose a login type.'
+    return render_template_string(LOGIN_PAGE,error=error)
+
+@app.get('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+LOGIN_PAGE='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAKA / Login</title><link rel="stylesheet" href="{{url_for('static',filename='site.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='auth.css')}}"></head><body class="auth-page"><main class="auth-shell"><a class="auth-brand" href="/">TAKA <span>/ TEAM 18</span></a><p class="auth-kicker">PLAYER ACCESS / TAKA NETWORK</p><h1>Sign in to<br><em>the leaderboard.</em></h1><p class="auth-copy">Choose your access level to continue.</p>{% if error %}<p class="auth-error" role="alert">{{error}}</p>{% endif %}<div class="auth-grid"><form method="post" class="auth-card"><input type="hidden" name="role" value="user"><span class="auth-number">01 / PLAYER</span><h2>User login</h2><label>USERNAME<input name="username" autocomplete="username" required></label><label>PASSWORD<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">ENTER AS USER <b>↗</b></button><small>Player access: games, runs, reports, and submissions.</small></form><form method="post" class="auth-card auth-admin"><input type="hidden" name="role" value="admin"><span class="auth-number">02 / CONTROL ROOM</span><h2>Admin login</h2><label>USERNAME<input name="username" autocomplete="username" required></label><label>PASSWORD<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">ENTER AS ADMIN <b>↗</b></button><small>Administrator access includes Manage and run moderation.</small></form></div><footer class="auth-foot">TAKA <span>TEAM 18 / PHASE 4</span></footer></main></body></html>'''
 
 def db():
     local=json.loads(LOCAL_CREDENTIALS.read_text()) if LOCAL_CREDENTIALS.exists() else {}
@@ -26,11 +79,12 @@ def query(sql, args=()):
             return c.fetchall()
     finally: con.close()
 
-SHELL='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAKA / Team 18</title><link rel="stylesheet" href="{{url_for('static',filename='site.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='experience.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='submit-menu.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='tv-home.css')}}"></head><body class="{{page_class}}">
-{% if page_class=='home-page' %}<header class="submit-menu-top"><a class="submit-menu-brand" href="/" aria-label="TAKA home">TAKA</a><nav class="submit-game-nav" aria-label="Main navigation"><a href="/" aria-current="page">GAMES</a><a href="/runs">RUNS</a><a href="/reports">REPORTS</a><a href="/submit">SUBMIT</a><a href="/admin">MANAGE</a></nav><span class="submit-menu-team">TEAM 18 <span class="live-dot"></span></span></header>{% else %}<header class="site-header"><div class="header-inner"><a class="brand" href="{{'/preview' if preview else '/'}}" aria-label="TAKA home"><span class="brand-mark">TAKA</span></a><nav aria-label="Main navigation">{% if preview %}<a href="/preview" class="active">Games</a>{% else %}<a href="/" class="{{'active' if endpoint in ['home','game','category','board'] else ''}}">Games</a><a href="/runs" class="{{'active' if endpoint in ['runs','run_detail'] else ''}}">Runs</a><a href="/reports" class="{{'active' if endpoint=='reports' else ''}}">Reports</a><a href="/submit" class="{{'active' if endpoint=='submit' else ''}}">Submit</a><a href="/admin" class="{{'active' if endpoint=='admin' else ''}}">Manage</a>{% endif %}</nav><span class="header-tag">TEAM 18 / DATABASE PROJECT</span></div></header>{% endif %}
+SHELL='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAKA / Team 18</title><link rel="stylesheet" href="{{url_for('static',filename='site.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='experience.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='submit-menu.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='tv-home.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='auth.css')}}"></head><body class="{{page_class}}">
+{% if page_class=='home-page' %}<header class="submit-menu-top"><a class="submit-menu-brand" href="/" aria-label="TAKA home">TAKA</a><nav class="submit-game-nav" aria-label="Main navigation"><a href="/" class="{{'active' if endpoint=='home' else ''}}">GAMES</a><a href="/runs" class="{{'active' if endpoint in ['runs','run_detail'] else ''}}">RUNS</a><a href="/reports" class="{{'active' if endpoint=='reports' else ''}}">REPORTS</a>{% if session.get('role')=='user' %}<a href="/submit" class="{{'active' if endpoint=='submit' else ''}}">SUBMIT</a>{% endif %}{% if session.get('role')=='admin' %}<a href="/admin" class="{{'active' if endpoint=='admin' else ''}}">MANAGE</a>{% endif %}</nav><span class="submit-menu-team">{{session.get('username','TEAM 18')}} <a class="auth-logout" href="{{url_for('logout')}}">LOG OUT</a> <span class="live-dot"></span></span></header>{% else %}<header class="site-header"><div class="header-inner"><a class="brand" href="/" aria-label="TAKA home"><span class="brand-mark">TAKA</span></a><nav aria-label="Main navigation"><a href="/" class="{{'active' if endpoint in ['home','game','category','board'] else ''}}">Games</a><a href="/runs" class="{{'active' if endpoint in ['runs','run_detail'] else ''}}">Runs</a><a href="/reports" class="{{'active' if endpoint=='reports' else ''}}">Reports</a>{% if session.get('role')=='user' %}<a href="/submit" class="{{'active' if endpoint=='submit' else ''}}">Submit</a>{% endif %}{% if session.get('role')=='admin' %}<a href="/admin" class="{{'active' if endpoint=='admin' else ''}}">Manage</a>{% endif %}</nav><span class="header-tag">{{session.get('username','TEAM 18')}} / <a class="auth-logout" href="{{url_for('logout')}}">LOG OUT</a></span></div></header>{% endif %}
 <div class="signal-bar" aria-label="Site status"><span class="signal-live"><i aria-hidden="true"></i> SYSTEM ONLINE</span><span class="signal-flow">TAKA <b>//</b> THREE GAMES <b>//</b> VERIFIED RUNS <b>//</b> EVERY SECOND COUNTS</span><span class="signal-end">TEAM 18 / PHASE 4</span></div>
 <main>{% with messages=get_flashed_messages() %}{% for m in messages %}<div class="msg">{{m}}</div>{% endfor %}{% endwith %}{{ body|safe }}</main>
 <footer><span>TAKA</span><span>TEAM 18 &nbsp; / &nbsp; DATA & APPLICATIONS</span></footer></body></html>'''
+
 def page(body, **kw): return render_template_string(SHELL,body=render_template_string(body,**kw),preview=kw.get('preview',False),endpoint=request.endpoint,page_class=kw.get('page_class',''))
 
 @lru_cache(maxsize=1)
@@ -225,8 +279,10 @@ def submit():
 
 @app.post('/review/<rid>')
 def review(rid):
+    if session.get('role')!='admin': abort(403)
     outcome=request.form.get('outcome'); note=request.form.get('note','').strip()
     if outcome not in ('verified','rejected') or (outcome=='rejected' and not note): flash('Rejection requires a reason.'); return redirect(url_for('run_detail',rid=rid))
+    if outcome=='verified': note=''
     con=db()
     try:
         with con.cursor() as c:
@@ -246,6 +302,7 @@ def review(rid):
 
 @app.post('/delete/<rid>')
 def delete_run(rid):
+    if session.get('role')!='admin': abort(403)
     con=db()
     try:
         with con.cursor() as c:
@@ -261,6 +318,7 @@ def delete_run(rid):
 
 @app.route('/admin',methods=['GET','POST'])
 def admin():
+    if session.get('role')!='admin': abort(403)
     if request.method=='POST':
         con=db()
         try:

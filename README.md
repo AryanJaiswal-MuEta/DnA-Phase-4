@@ -20,7 +20,7 @@ From the `src/` directory:
 4. Populate: `python populate.py`. The schema script drops and recreates `speedrun_phase4`; run it only on an instance where that database can be replaced.
 5. Start the application: `python app.py` and open `http://127.0.0.1:5000`.
 
-The database is loaded from the included snapshot and does not need internet access. To reload it, run schema creation followed by population again. A local demo actor, `team5_admin`, is granted game permissions for writing examples. This is a course demo, not a public authentication service.
+The database is loaded from the included snapshot and does not need internet access. To reload it, run schema creation followed by population again. A local demo actor, `team5_admin`, is granted game permissions for writing examples. The login page has two roles. User access accepts a nonempty username and password and is limited to Games, Runs, Reports, and Submit. Admin access requires the `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables; admins can use Manage and review or delete pending runs, but cannot use Submit. Login sessions use Flask’s signed session cookie; set a stable random `SECRET_KEY` before launching. User accounts are demo identities rather than individually stored/password-checked accounts.
 
 ## Open the website
 
@@ -29,10 +29,13 @@ After MySQL is running and you have completed the setup above, open PowerShell i
 ```powershell
 cd .\src
 $env:DB_PASSWORD = "your-mysql-password"
+$env:SECRET_KEY = "replace-with-a-long-random-value"
+$env:ADMIN_USERNAME = "choose-admin-username"
+$env:ADMIN_PASSWORD = "choose-admin-password"
 python app.py
 ```
 
-If your MySQL user is not `root`, also set `$env:DB_USER`. The app uses `localhost:3306` by default; set `$env:DB_HOST` or `$env:DB_PORT` if yours differs. Open **http://127.0.0.1:5000/** in your browser. Keep the PowerShell window running while using the site; press Ctrl+C to stop it.
+If your MySQL user is not `root`, also set `$env:DB_USER`. The app uses `localhost:3306` by default; set `$env:DB_HOST` or `$env:DB_PORT` if yours differs. Before starting, configure `$env:SECRET_KEY` to a long random value and set `$env:ADMIN_USERNAME` and `$env:ADMIN_PASSWORD` for the administrator account. Open **http://127.0.0.1:5000/** in your browser; it redirects to the login page. Keep the PowerShell window running while using the site; press Ctrl+C to stop it.
 
 ## Design changes
 
@@ -56,7 +59,7 @@ Some cross-table rules require transactions and application checks: category/lev
 5. **Three join reports** - `/reports`. Game/category counts; moderator review counts and average turnaround; fastest verified result within each board, labelled with platform and category. The third report remains board-specific for comparability.
 6. **Create game, category, board, and rule version** - `/admin`, first form. Creates all related rows transactionally and grants demo moderator permissions.
 7. **Create pending run and evidence** - `/submit`. Creates a runner if needed, selects current board rules, inserts the run and evidence in one transaction.
-8. **Update review decision** - open a new run from `/runs`; verify or reject it. A rejection needs a reason. The route checks game-scoped permission and self-review, and inserts a final event.
+8. **Update review decision (admin)** - open a new run from `/runs`; verify or reject it. The reason field appears only for a rejection, which requires a reason. The route checks the signed-in admin role, game-scoped permission, and self-review, then inserts a final event.
 9. **Update rules** - `/admin`, second form. Adds a new board rule version without changing prior run references.
 10. **Delete pending run** - open a pending run; delete it. Reviewed runs are retained; evidence cascades and the unreferenced run-rule record is removed in the same transaction.
 
@@ -68,7 +71,7 @@ For the required `18.mp4` video, show the site next to a MySQL client. Before an
 - Run submission checks positive integer duration and HTTP(S) evidence; SQL enforces `duration_ms > 0`, keys, FKs, and evidence index 1-10.
 - `RUN_RULE` has Phase 3's `(submitted_at, board_id)` key. A submission that collides in one second is assigned the next free stored second. This is a Phase 3 modelling limitation because timestamps are not guaranteed unique in a real system.
 - Deleting or editing a reviewed source run is prohibited in the UI to preserve its audit trail.
-- The site is a local coursework prototype. No public login or user-owned moderation actions are exposed; the write actor is the seeded demo administrator.
+- The site is a local coursework prototype. Only the administrator session can review or delete pending runs; the review audit entry uses the seeded demo administrator identity.
 
 ## GenAI use
 
