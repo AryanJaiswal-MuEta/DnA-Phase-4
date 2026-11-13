@@ -161,3 +161,12 @@ body.celeste-page{height:100vh;height:100dvh;overflow:hidden;display:flex;flex-d
 @media(max-width:430px){.celeste-page .celeste-stage{padding:15px 15px 0}.celeste-page .celeste-copy h1{font-size:clamp(42px,min(12vw,7vh),60px)}.celeste-page .celeste-copy p{max-width:210px}.celeste-page .celeste-sticker{top:65px;width:62%;height:38%}.celeste-page .celeste-rail{top:49%}}
 @media(max-height:680px){.celeste-page .header-inner{height:58px}.celeste-page .breadcrumb{padding:8px 0}.celeste-page .celeste-copy h1{font-size:clamp(43px,9vh,72px);margin:8px 0}.celeste-page .celeste-copy p{font-size:12px;line-height:1.35;margin-bottom:10px}.celeste-page .celeste-rail{top:8px;bottom:35px}}
 @media(max-height:680px) and (max-width:760px){.celeste-page .header-inner{height:auto}.celeste-page .celeste-rail{top:50%;bottom:10px}}
+
+/* Floating category cards within the existing rail scroller. */
+.celeste-page .celeste-rail{background:transparent;border:0;backdrop-filter:none;gap:9px}
+.celeste-page .celeste-rail-head,.celeste-page .celeste-rail-foot{flex:none;border:1px solid #66728c55;border-radius:14px;background:#111827d9;backdrop-filter:blur(10px)}
+.celeste-page .celeste-rail-scroll{display:flex;flex-direction:column;gap:11px;padding:3px 5px 7px;scroll-padding-top:3px;scrollbar-gutter:stable}
+.celeste-page .celeste-rail-item{flex:none;min-height:82px;padding:14px 15px;border:1px solid #68738c6e;border-radius:15px;background:linear-gradient(125deg,#1a2032e8,#111827e8);box-shadow:0 7px 18px #05071355;backdrop-filter:blur(8px);scroll-snap-align:start;transition:transform .2s,background .2s,border-color .2s,box-shadow .2s}
+.celeste-page .celeste-rail-item:hover,.celeste-page .celeste-rail-item:focus-visible{padding-left:15px;transform:translateX(-3px);background:linear-gradient(125deg,#3c263ef5,#18243af5);border-color:#ff698d;box-shadow:0 10px 25px #05071388,0 0 16px #ff47742a}
+.celeste-page .celeste-rail-foot{padding-top:11px;padding-bottom:11px}
+@media(prefers-reduced-motion:reduce){.celeste-page .celeste-rail-item{transition:none}.celeste-page .celeste-rail-item:hover,.celeste-page .celeste-rail-item:focus-visible{transform:none}}
