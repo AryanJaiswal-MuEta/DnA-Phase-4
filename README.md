@@ -2,7 +2,7 @@
 
 Team 18's Phase 4 application implements the assigned Speedrun Leaderboard mini-world. The assigned source is Team 14's Phase 2 EER model and Team 5's Phase 3 relational mapping from the Questions Phase 4 folder. That assigned Team 5 report is included unchanged as `phase3.pdf`.
 
-The current site models selected public [Speedrun.com](https://www.speedrun.com/) game pages. Its population snapshot came from the [official public API](https://github.com/speedruncomorg/api/blob/master/version1/README.md) on 13 November 2026. It includes three games (Super Mario 64, Celeste, Super Mario Bros.), their categories and levels, and up to 200 API results per category before validation and evidence filtering. The current import contains 4,678 runs on 509 distinct boards. `source_data.json` retains the downloaded records, source URLs, and variable labels. To refresh it, run `fetch_source.py` followed by `fetch_variables.py`; neither is necessary for normal setup.
+The current site models selected public [Speedrun.com](https://www.speedrun.com/) game pages. Its population snapshot came from the [official public API](https://github.com/speedruncomorg/api/blob/master/version1/README.md) on 13 November 2026. It includes three games (Super Mario 64, Celeste, Super Mario Bros.), their categories and levels, and up to 200 API results per category before validation and evidence filtering. The current import contains 4,678 runs on 509 distinct boards. `src/source_data.json` retains the downloaded records, source URLs, and variable labels. To refresh it, run `fetch_source.py` followed by `fetch_variables.py` from `src/`; neither is necessary for normal setup.
 
 ## Stack
 
@@ -12,7 +12,7 @@ The current site models selected public [Speedrun.com](https://www.speedrun.com/
 
 ## Setup
 
-From this directory:
+From the `src/` directory:
 
 1. Create the schema: `mysql -u root -p < schema.sql`.
 2. Install Python packages: `pip install -r requirements.txt`.
@@ -21,10 +21,6 @@ From this directory:
 5. Start the application: `python app.py` and open `http://127.0.0.1:5000`.
 
 The database is loaded from the included snapshot and does not need internet access. To reload it, run schema creation followed by population again. A local demo actor, `team5_admin`, is granted game permissions for writing examples. This is a course demo, not a public authentication service.
-
-### This computer's local instance
-
-A portable MySQL 8.4.13 instance is now initialized at `phase4/mysql-local` and listens only on `127.0.0.1:3307`. It is intentionally outside `18.zip` because the server binaries and data directory are machine-specific. The app reads its local connection settings from `mysql-local/credentials.json`; keep this file private. From PowerShell, run `./start_local.ps1` to start MySQL (if needed) and the web app, then open `http://127.0.0.1:5000/`. The script can be stopped with Ctrl+C; the MySQL process may stay running until Windows shuts down. The standard setup above remains the portable submission procedure for a separate MySQL installation.
 
 ## Design changes
 
@@ -41,8 +37,8 @@ Some cross-table rules require transactions and application checks: category/lev
 
 ## Numbered UI features and demo order
 
-1. **Partial-text game search** - `/`, search bar. Returns title or slug matches without case sensitivity under the schema collation.
-2. **Game and category selection** - `/game/<game_id>`, game cards and board links. Lists categories, levels, platforms, readable settings (such as Version and DTS), and run counts.
+1. **Game selection** - `/`, three game cards with board counts and game artwork.
+2. **Category and board selection** - `/game/<game_id>` then `/game/<game_id>/category/<category_id>`. Lists categories, levels, platforms, readable settings (such as Version and DTS), and run counts.
 3. **Leaderboard projection, aggregate, and ranking** - `/board/<board_id>`. Shows runner, fastest verified time, date, rank, number of ranked runners, and board rules. Ranking uses each runner's best verified run on that exact board.
 4. **Run selection and evidence** - `/runs`, status filter, then `/run/<run_id>`. Shows verified/pending/rejected records and the related evidence and review rows.
 5. **Three join reports** - `/reports`. Game/category counts; moderator review counts and average turnaround; fastest verified result within each board, labelled with platform and category. The third report remains board-specific for comparability.
@@ -56,7 +52,7 @@ For the required `18.mp4` video, show the site next to a MySQL client. Before an
 
 ## Query and integrity notes
 
-- Search uses `LIKE` parameters, never concatenated SQL.
+- Status filtering and all write routes use bound SQL parameters, never concatenated SQL.
 - Run submission checks positive integer duration and HTTP(S) evidence; SQL enforces `duration_ms > 0`, keys, FKs, and evidence index 1-10.
 - `RUN_RULE` has Phase 3's `(submitted_at, board_id)` key. A submission that collides in one second is assigned the next free stored second. This is a Phase 3 modelling limitation because timestamps are not guaranteed unique in a real system.
 - Deleting or editing a reviewed source run is prohibited in the UI to preserve its audit trail.
