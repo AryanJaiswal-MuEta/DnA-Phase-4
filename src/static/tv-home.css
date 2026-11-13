@@ -177,3 +177,4 @@
 .tv-room.is-previewing .tv-preview.is-visible{display:block!important;opacity:.9}
 .tv-preview{object-fit:contain;background:#000}
 .tv-preview[src$="sm64-generated.png"]{object-fit:cover}
+.tv-preview[src$="smb1-generated.png"]{object-fit:cover}
