@@ -27,7 +27,7 @@ def enforce_login_and_role():
     if role not in {'admin','user'}:
         return redirect(url_for('login',next=request.full_path if request.query_string else request.path))
     if endpoint=='submit' and role=='admin':
-        abort(403)
+        return redirect(url_for('admin'))
     if role=='user' and endpoint not in USER_ENDPOINTS:
         abort(403)
 
