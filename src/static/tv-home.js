@@ -30,7 +30,7 @@
   }
   async function showBoard(id){
     try{const data=await request(`/api/tv/board/${encodeURIComponent(id)}`);state.board=data.board;state.run=null;
-      const items=data.runs.map(r=>`<button type="button" class="tv-choice tv-run-choice" data-run="${esc(r.run_id)}"><b>${String(r.rank).padStart(2,'0')}</b><span><strong>${esc(r.runner)}</strong><small>${esc(r.date)}</small></span><em>${esc(r.time)}</em></button>`).join('');
+      const items=data.runs.map(r=>`<button type="button" class="tv-choice tv-run-choice ${r.rank<=3?`tv-podium tv-podium-${r.rank}`:''}" data-run="${esc(r.run_id)}"><b>${String(r.rank).padStart(2,'0')}</b><span><strong>${esc(r.runner)}</strong><small>${esc(r.date)}</small></span><em>${esc(r.time)}</em></button>`).join('');
       const rules=data.board.rules?`<details class="tv-rules"><summary>BOARD RULES</summary><p>${esc(data.board.rules)}</p></details>`:'';
       screen('03 / LEADERBOARD',`${data.board.category} / ${data.board.level}`,`${data.board.platform} · ${data.runs.length} RUNNERS`,`<div class="tv-board-settings">${esc(data.board.settings)}</div>${items||'<p>No verified runs on this board yet.</p>'}${rules}`,'category');
     }catch(e){error(e.message)}
