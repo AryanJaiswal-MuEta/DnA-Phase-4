@@ -178,3 +178,8 @@
 .tv-preview{object-fit:contain;background:#000}
 .tv-preview[src$="sm64-generated.png"]{object-fit:cover}
 .tv-preview[src$="smb1-generated.png"]{object-fit:cover}
+.tv-choice{position:relative;min-height:53px;padding-top:7px;padding-bottom:7px}
+.tv-choice::before{content:"";position:absolute;left:0;top:50%;width:10px;height:16px;transform:translate(-45%,-50%) scale(.7);clip-path:polygon(0 0,100% 50%,0 100%);background:#ffd084;opacity:0;transition:opacity .16s,transform .16s;filter:drop-shadow(0 0 4px #ffc56b)}
+.tv-choice:is(:hover,:focus-visible)::before{opacity:1;transform:translate(-5%,-50%) scale(1)}
+.tv-choice strong{font-size:14px}.tv-choice small{font-size:9px}
+.tv-choice>b{font-size:10px}.tv-choice i,.tv-choice em{font-size:12px}
