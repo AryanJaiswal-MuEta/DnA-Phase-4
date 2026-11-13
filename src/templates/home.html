@@ -7,6 +7,7 @@
         <div class="tv-static" aria-hidden="true"></div>
         {% for g in games %}{% if art.get(g.slug) %}<img class="tv-preview" data-game="{{g.game_id}}" src="{{url_for('static',filename=art[g.slug])}}" alt="">{% endif %}{% endfor %}
         <div class="tv-screen-copy"><small id="tv-status">SELECT A CASSETTE</small><strong id="tv-title">READY<br>PLAYER ONE</strong><span id="tv-detail">{{games|length}} GAMES · {{total}} BOARDS</span></div>
+        <div class="tv-app" id="tv-app" hidden></div>
       </div>
       <div class="tv-controls" aria-hidden="true"><span class="tv-led"></span><span>TAKA VISION</span><i></i><i></i></div>
     </div>
@@ -21,34 +22,4 @@
   <div class="tv-room-footer"><span>{{games|length}} GAMES IN THE LIBRARY</span><span>HOVER TO PREVIEW · CLICK TO LOAD</span></div>
   </div>
 </section>
-<script>
-(() => {
-  const room=document.querySelector('.tv-room'),cassettes=[...document.querySelectorAll('.game-cassette')],title=document.getElementById('tv-title'),status=document.getElementById('tv-status'),detail=document.getElementById('tv-detail');
-  if(!room)return;
-  function preview(cassette){
-    const id=cassette?.dataset.game;
-    room.dataset.preview=id||'';
-    document.querySelectorAll('.tv-preview').forEach(img=>img.classList.toggle('is-visible',img.dataset.game===id));
-    title.textContent=cassette?cassette.dataset.title:'READY PLAYER ONE';
-    status.textContent=cassette?'GAME DETECTED':'SELECT A CASSETTE';
-    detail.textContent=cassette?cassette.dataset.boards+' BOARDS · CLICK TO LOAD':'{{games|length}} GAMES · {{total}} BOARDS';
-  }
-  cassettes.forEach(cassette=>{
-    cassette.addEventListener('mouseenter',()=>preview(cassette));
-    cassette.addEventListener('focus',()=>preview(cassette));
-    cassette.addEventListener('mouseleave',()=>{if(!room.classList.contains('is-loading'))preview(null)});
-    cassette.addEventListener('blur',()=>{if(!room.classList.contains('is-loading'))preview(null)});
-    cassette.addEventListener('click',event=>{
-      if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
-      if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-      event.preventDefault();if(room.classList.contains('is-loading'))return;
-      preview(cassette);room.classList.add('is-loading');status.textContent='LOADING GAME';
-      const rect=cassette.getBoundingClientRect(),slot=document.querySelector('.tv-slot').getBoundingClientRect();
-      const clone=cassette.cloneNode(true);clone.classList.add('cassette-flying');clone.style.cssText=`left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px`;
-      document.body.append(clone);cassette.style.visibility='hidden';
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{clone.style.transform=`translate(${slot.left+slot.width/2-rect.left-rect.width/2}px,${slot.top-rect.top-rect.height*.55}px) scale(.36)`;clone.style.opacity='0'}));
-      setTimeout(()=>{window.location.href=cassette.href},850);
-    });
-  });
-})();
-</script>
+<script src="{{url_for('static',filename='tv-home.js')}}" defer></script>

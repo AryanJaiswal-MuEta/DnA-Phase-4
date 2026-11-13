@@ -7,7 +7,7 @@ from functools import lru_cache
 from datetime import datetime, date
 from urllib.parse import urlparse
 import pymysql
-from flask import Flask, request, redirect, url_for, flash, render_template_string, abort
+from flask import Flask, request, redirect, url_for, flash, render_template_string, abort, jsonify
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY','phase4-local-demo-only')
@@ -95,6 +95,40 @@ def home():
     total=sum(g['boards'] for g in games)
     art={'celeste':'game-art/celeste.webp','sm64':'game-art/sm64-custom.png','smb1':'game-art/smb1-custom.png'}
     return page(PAGE_TEMPLATES.joinpath('home.html').read_text(encoding='utf-8'),games=games,total=total,art=art,page_class='home-page')
+
+@app.get('/api/tv/game/<gid>')
+def tv_game(gid):
+    games=query('SELECT game_id,title_international,slug,release_year FROM game WHERE game_id=%s',(gid,))
+    if not games: abort(404)
+    categories=query('''SELECT c.category_id,c.name,c.kind,COUNT(DISTINCT b.board_id) board_count,COUNT(r.run_id) run_count FROM category c LEFT JOIN leaderboard b ON b.category_id=c.category_id LEFT JOIN run r ON r.board_id=b.board_id WHERE c.game_id=%s GROUP BY c.category_id ORDER BY c.kind,c.name''',(gid,))
+    return jsonify(game=games[0],categories=categories)
+
+@app.get('/api/tv/category/<cid>')
+def tv_category(cid):
+    cats=query('''SELECT c.category_id,c.game_id,c.name,c.kind,g.title_international game_name FROM category c JOIN game g ON g.game_id=c.game_id WHERE c.category_id=%s''',(cid,))
+    if not cats: abort(404)
+    boards=query('''SELECT b.board_id,b.variant_description,l.name level_name,p.name platform_name,COUNT(r.run_id) run_count FROM leaderboard b LEFT JOIN level l ON l.level_id=b.level_id JOIN platform p ON p.platform_id=b.platform_id LEFT JOIN run r ON r.board_id=b.board_id WHERE b.category_id=%s GROUP BY b.board_id ORDER BY l.display_order,run_count DESC,p.name''',(cid,))
+    for b in boards: b['settings']=variant_label(cid,b['variant_description'])
+    return jsonify(category=cats[0],boards=[{'board_id':b['board_id'],'level':b['level_name'] or 'Full game','platform':b['platform_name'],'settings':b['settings'],'runs':b['run_count']} for b in boards])
+
+@app.get('/api/tv/board/<int:bid>')
+def tv_board(bid):
+    boards=query('''SELECT b.board_id,b.category_id,b.variant_description,g.title_international game_name,c.name category_name,l.name level_name,p.name platform_name,rv.rules_text FROM leaderboard b JOIN category c ON c.category_id=b.category_id JOIN game g ON g.game_id=c.game_id LEFT JOIN level l ON l.level_id=b.level_id JOIN platform p ON p.platform_id=b.platform_id LEFT JOIN board_rule_version rv ON rv.board_id=b.board_id AND rv.version_no=(SELECT MAX(version_no) FROM board_rule_version WHERE board_id=b.board_id) WHERE b.board_id=%s''',(bid,))
+    if not boards: abort(404)
+    rows=query('''SELECT r.run_id,u.display_name,r.duration_ms,r.run_date FROM run r JOIN users u ON u.user_id=r.runner_id JOIN run_status rs ON rs.run_id=r.run_id WHERE r.board_id=%s AND rs.current_status='verified' ORDER BY r.duration_ms,r.run_date''',(bid,))
+    best={}
+    for r in rows: best.setdefault(r['display_name'],r)
+    ranked=sorted(best.values(),key=lambda r:(r['duration_ms'],r['run_date']))
+    board=boards[0]
+    return jsonify(board={'board_id':bid,'category_id':board['category_id'],'game':board['game_name'],'category':board['category_name'],'level':board['level_name'] or 'Full game','platform':board['platform_name'],'settings':variant_label(board['category_id'],board['variant_description']),'rules':board['rules_text'] or ''},runs=[{'run_id':r['run_id'],'runner':r['display_name'],'time':format_duration(r['duration_ms']),'date':str(r['run_date']),'rank':i} for i,r in enumerate(ranked,1)])
+
+@app.get('/api/tv/run/<rid>')
+def tv_run(rid):
+    runs=query('''SELECT r.run_id,r.board_id,r.duration_ms,r.run_date,r.source_url,rs.current_status,u.display_name,g.title_international game_name,c.name category_name FROM run r JOIN run_status rs ON rs.run_id=r.run_id JOIN users u ON u.user_id=r.runner_id JOIN leaderboard b ON b.board_id=r.board_id JOIN category c ON c.category_id=b.category_id JOIN game g ON g.game_id=c.game_id WHERE r.run_id=%s''',(rid,))
+    if not runs: abort(404)
+    evidence=query('SELECT url,kind,label FROM evidence_link WHERE run_id=%s ORDER BY evidence_no',(rid,))
+    r=runs[0]
+    return jsonify(run={'run_id':r['run_id'],'board_id':r['board_id'],'runner':r['display_name'],'time':format_duration(r['duration_ms']),'date':str(r['run_date']),'status':r['current_status'],'game':r['game_name'],'category':r['category_name'],'source_url':r['source_url']},evidence=evidence)
 
 @app.get('/game/<gid>')
 def game(gid):
