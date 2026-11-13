@@ -29,11 +29,6 @@ body{
   background-size:auto,auto,52px 52px,52px 52px;
   animation:grid-drift 28s linear infinite;
 }
-body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:10;
-  background:repeating-linear-gradient(0deg,transparent 0 3px,#02050d2b 4px 5px);
-  opacity:.22;
-}
 @keyframes grid-drift{to{background-position:0 0,0 0,52px 52px,52px 52px}}
 .hero{isolation:isolate}
 .hero::before{
