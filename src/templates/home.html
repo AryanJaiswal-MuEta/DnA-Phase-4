@@ -9,10 +9,9 @@
         <div class="tv-screen-copy"><small id="tv-status">SELECT A CASSETTE</small><strong id="tv-title">READY<br>PLAYER ONE</strong><span id="tv-detail">{{games|length}} GAMES · {{total}} BOARDS</span></div>
         <div class="tv-app" id="tv-app" hidden></div>
       </div>
-      <div class="tv-controls" aria-hidden="true"><span class="tv-led"></span><span>TAKA VISION</span><i></i><i></i></div>
+      <div class="tv-controls" aria-hidden="true"><span class="tv-led"></span><span>TAKA VISION</span><i></i><i></i><div class="tv-slot"><span>INSERT GAME</span></div></div>
     </div>
     <div class="tv-base" aria-hidden="true"></div><div class="tv-feet" aria-hidden="true"><i></i><i></i></div>
-    <div class="tv-slot" aria-hidden="true"><span>INSERT GAME</span></div>
   </div>
   <div class="cassette-shelf" aria-label="Game cassettes">
     {% for g in games %}<a class="game-cassette" href="{{url_for('game',gid=g.game_id)}}" data-game="{{g.game_id}}" data-title="{{g.title_international}}" data-boards="{{g.boards}}" aria-label="Load {{g.title_international}}">

@@ -64,7 +64,7 @@
       const rect=cassette.getBoundingClientRect(),slot=document.querySelector('.tv-slot').getBoundingClientRect();
       const clone=cassette.cloneNode(true);clone.classList.add('cassette-flying');clone.style.cssText=`left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px`;
       document.body.append(clone);
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{clone.style.transform=`translate(${slot.left+slot.width/2-rect.left-rect.width/2}px,${slot.top-rect.top-rect.height*.55}px) scale(.36)`;clone.style.opacity='0'}));
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{clone.style.transform=`translate(${slot.left+slot.width/2-rect.left-rect.width/2}px,${slot.top+slot.height/2-rect.top-rect.height/2}px) rotate(-90deg) scale(.2)`;clone.style.opacity='0'}));
       setTimeout(()=>{clone.remove();showGame(id)},780);
     });
   });

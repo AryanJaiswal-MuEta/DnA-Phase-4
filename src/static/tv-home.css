@@ -146,3 +146,11 @@
 /* User-provided sepia collage behind the home scene. */
 .home-page{background:#24180f url('game-art/home-sepia-collage.png') center center/cover no-repeat}
 .home-page main{background:linear-gradient(90deg,#100b0ab8,#100b0aaf 48%,#100b0aba),url('game-art/home-sepia-collage.png') center center/cover no-repeat}
+
+/* Cassette slot on the control side and square screen corners. */
+.tv-screen{border-radius:3px}
+.tv-screen::after{border-radius:2px}
+.tv-controls .tv-slot{position:relative;left:auto;bottom:auto;transform:none;flex:none;width:19px;height:64px;margin:12px auto 2px;border:3px solid #b67d47;border-radius:2px;background:#050708;box-shadow:inset 0 0 0 2px #1d1714,0 2px 5px #0008}
+.tv-controls .tv-slot span{position:absolute;top:2px;left:21px;width:auto;height:100%;color:#f1c692;font:700 7px var(--mono);letter-spacing:.07em;writing-mode:vertical-rl;white-space:nowrap}
+@media(max-height:700px) and (min-width:750px){.tv-controls .tv-slot{bottom:auto;height:56px;margin-top:6px}.tv-controls .tv-slot span{top:0}}
+@media(max-width:650px){.tv-controls .tv-slot{width:13px;height:45px;margin-top:5px}.tv-controls .tv-slot span{display:none}}
