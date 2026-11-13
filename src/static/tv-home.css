@@ -105,3 +105,17 @@
 }
 @media(max-height:760px) and (min-width:750px){.tv-screen{min-height:320px}.tv-room-heading{margin-bottom:5px}.tv-display{padding-top:18px}.tv-room-footer{margin-top:20px}}
 @media(max-width:749px){.tv-set{width:min(100%,620px)}.tv-screen{min-height:clamp(260px,52vw,380px)}}
+
+/* Put the introduction with the cassettes so the TV owns the left side. */
+@media(min-width:750px){
+  .tv-room{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(215px,.7fr);grid-template-rows:auto auto auto;column-gap:clamp(22px,3vw,65px);align-content:center;align-items:center;max-width:1450px;padding:30px 18px 26px}
+  .tv-display{display:contents}
+  .tv-room-heading{grid-column:2;grid-row:1;align-self:end;text-align:left;width:100%;margin:0 0 22px;padding:0}
+  .tv-room-heading h1{font-size:clamp(29px,2.8vw,49px);line-height:1.02;margin:10px 0 12px}
+  .tv-room-heading p{max-width:330px;font-size:12px;line-height:1.45}
+  .tv-set{grid-column:1;grid-row:1/3;align-self:center;justify-self:center;width:min(100%,780px);margin:0}
+  .tv-screen{min-height:clamp(390px,49vh,560px)}
+  .cassette-shelf{grid-column:2;grid-row:2;align-self:start;width:100%;max-width:370px;margin:0}
+  .tv-room-footer{grid-column:1/-1;grid-row:3;width:100%;max-width:none;margin:42px 0 0}
+}
+@media(max-height:760px) and (min-width:750px){.tv-room{padding-top:22px}.tv-room-heading{margin-bottom:13px}.tv-room-heading h1{font-size:clamp(27px,2.6vw,39px)}.tv-room-heading p{font-size:11px}.tv-screen{min-height:350px}.game-cassette{height:92px}.tv-room-footer{margin-top:29px}}
