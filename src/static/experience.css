@@ -62,3 +62,36 @@
 
 .admin-drawer-close{margin-top:24px}
 .admin-page .admin-drawer-close{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;padding:0;line-height:1;font:700 16px/1 Arial,sans-serif}
+
+/* Runs archive wallpaper. */
+.runs-page{position:relative;isolation:isolate;background:transparent}
+.runs-page::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(125deg,#080c16b3 0%,#0b122080 48%,#1010208c 100%),url('game-art/runs-alpine.png') center/cover no-repeat}
+.runs-page::after{content:none}
+.runs-page .site-header,.runs-page .signal-bar,.runs-page main,.runs-page footer{position:relative;z-index:1}
+.runs-page .experience-shell::before{opacity:.30}
+.runs-page .runs-hero{background:transparent;border-bottom:0}
+.runs-page .runs-hero::before,.runs-page .runs-hero::after{content:none;display:none}
+.runs-page .metric-card,.runs-page .run-feed,.runs-page .xp-table-wrap{backdrop-filter:blur(10px)}
+@media(max-width:700px){.runs-page::before{background:linear-gradient(125deg,#080c1670,#0b122060 48%,#10102070),url('game-art/runs-alpine.png') center/cover no-repeat}}
+
+/* Reports data desk wallpaper. */
+.reports-page{position:relative;isolation:isolate;background:transparent}
+.reports-page::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(125deg,#07151cc2 0%,#0a2026a6 50%,#08151ccc 100%),url('game-art/reports-waterfall.png') center/cover no-repeat}
+.reports-page::after{content:none}
+.reports-page .site-header,.reports-page .signal-bar,.reports-page main,.reports-page footer{position:relative;z-index:1}
+.reports-page .experience-shell::before{opacity:.30}
+.reports-page .reports-hero{background:transparent;border-bottom:0}
+.reports-page .reports-hero::before,.reports-page .reports-hero::after{content:none;display:none}
+.reports-page .metric-card,.reports-page .xp-table-wrap,.reports-page .report-jump a{backdrop-filter:blur(10px)}
+@media(max-width:700px){.reports-page::before{background:linear-gradient(125deg,#07151ca8,#0a202680 50%,#08151cb8),url('game-art/reports-waterfall.png') center/cover no-repeat}}
+
+/* Keep the shared status ticker off the Runs and Reports pages. */
+.runs-page .signal-bar,.reports-page .signal-bar{display:none}
+
+
+/* Keep decorative motion out of the Runs clock and Reports metric. */
+.runs-page .clock-sweep,.reports-page .data-beam{display:none}
+
+
+@media(max-width:750px){.admin-hero-brand small{display:inline-block;margin-left:8px;font-size:8px}}
+

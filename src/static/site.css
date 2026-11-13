@@ -219,3 +219,8 @@ body.celeste-page{height:100vh;height:100dvh;overflow:hidden;display:flex;flex-d
 @media(max-width:700px){.home-page main{padding:0 15px 30px}.shelf-home{min-height:0;padding-top:45px}.shelf-heading{margin-bottom:28px}.game-shelf{min-height:320px;gap:7px}.game-book{flex-basis:43px;height:310px}.game-shelf .game-book:is(:hover,:focus-visible){flex-basis:min(54vw,260px);transform:translateY(-8px)}.book-spine{width:43px;padding:10px 0}.book-spine strong{font-size:12px;max-height:230px}.book-cover-copy{left:11px;right:10px}.book-cover-copy strong{font-size:22px}.shelf-footer{font-size:8px}}
 @media(max-width:410px){.game-shelf{gap:4px}.game-shelf .game-book:is(:hover,:focus-visible){flex-basis:54vw}.shelf-footer span:last-child{display:none}}
 @media(prefers-reduced-motion:reduce){.game-book,.book-cover img,.book-cover-copy{transition:none}}
+
+/* Consistent TAKA / Team 18 wordmark across page headers. */
+.site-header .brand-mark{border:0;background:transparent;transform:none;box-shadow:none;padding:0;color:#ecfaff;font:700 22px/.9 var(--display);letter-spacing:-.055em}
+.site-header .brand-team{color:#c8dfe4;font:700 9px var(--mono);letter-spacing:.15em;white-space:nowrap}
+

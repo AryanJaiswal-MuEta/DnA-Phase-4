@@ -112,3 +112,9 @@
 @media(max-width:750px){.submit-menu-top{height:55px;padding:0 14px}.submit-menu-brand{font-size:16px}.submit-game-nav{gap:8px}.submit-game-nav a{font-size:7px;letter-spacing:0}.submit-menu-left{top:75px}.submit-menu-aside{top:240px}}
 @media(max-width:430px){.submit-menu-aside{top:222px}}
 @media(max-height:700px) and (max-width:750px){.submit-menu-left{top:68px}.submit-menu-aside{top:200px}}
+
+/* Compact TAKA / Team 18 wordmark matching the shared header. */
+.submit-menu-brand{display:flex;align-items:baseline;gap:12px;color:#ecfaff;font:700 22px/.9 var(--display);letter-spacing:-.055em;text-shadow:none}
+.submit-menu-brand small{display:inline-block;margin:0;color:#c8dfe4;font:700 9px var(--mono);letter-spacing:.15em;white-space:nowrap}
+@media(max-width:750px){.submit-menu-brand{font-size:17px}.submit-menu-brand small{font-size:8px}}
+
