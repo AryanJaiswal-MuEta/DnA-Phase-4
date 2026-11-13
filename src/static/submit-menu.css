@@ -85,3 +85,17 @@
 .submit-menu-steps .submit-route-group .submit-step.is-active{background:linear-gradient(90deg,#75501ed9,#18303bc7);box-shadow:inset 3px 0 0 #ffca75,0 0 18px #ffbd4d3d}
 .submit-menu-steps .submit-route-group .submit-step.is-complete{background:#0c26307d}
 @media(max-width:750px){.submit-menu-steps .submit-route-group{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr)}.submit-menu-steps .submit-route-group .submit-step+.submit-step{border-top:0}.submit-menu-steps .submit-route-group .submit-step:nth-child(2n){border-left:1px solid #b7d4df33}.submit-menu-steps .submit-route-group .submit-step:nth-child(n+3){border-top:1px solid #b7d4df33}.submit-menu-steps>.submit-step{grid-column:span 1}.submit-menu-steps{grid-template-columns:repeat(2,1fr)}}
+
+/* One route form with dependent choices. */
+.submit-menu-steps{gap:8px}
+.submit-menu-steps .submit-step{min-height:58px;padding:8px 11px}
+.route-panel h2{margin:5px 0 4px;font-size:clamp(28px,2.5vw,36px)}
+.route-panel .form-stage-copy{margin-bottom:5px}
+.route-panel label{margin:8px 0 3px}
+.route-panel select{min-height:34px;padding:6px 10px}
+.route-panel select:disabled{opacity:.5;cursor:not-allowed}
+.route-panel .submit-step-actions{margin-top:11px}
+@media(max-height:700px) and (min-width:751px){.route-panel h2{font-size:29px}.route-panel label{margin:6px 0 3px}.route-panel select{min-height:31px}.route-panel .submit-step-actions{margin-top:9px}}
+@media(max-width:750px){.submit-menu-steps{display:flex;gap:5px}.submit-menu-steps .submit-step{min-height:36px;padding:5px 7px;justify-content:center}.submit-menu-aside{top:240px}.route-panel h2{font-size:27px}.route-panel label{margin:7px 0 3px}.route-panel select{min-height:32px}}
+@media(max-width:430px){.submit-menu-aside{top:222px}}
+@media(max-height:700px) and (max-width:750px){.submit-menu-aside{top:200px}}
