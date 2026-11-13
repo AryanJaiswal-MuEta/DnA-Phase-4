@@ -14,13 +14,25 @@ The current site models selected public [Speedrun.com](https://www.speedrun.com/
 
 From the `src/` directory:
 
-1. Create the schema: `mysql -u root -p < schema.sql`.
+1. Create the schema: `mysql -u root -p -e "source schema.sql"`.
 2. Install Python packages: `pip install -r requirements.txt`.
 3. Set `DB_HOST`, `DB_PORT`, `DB_USER`, and `DB_PASSWORD` for your local MySQL server. The defaults are localhost, 3306, root, and an empty password.
 4. Populate: `python populate.py`. The schema script drops and recreates `speedrun_phase4`; run it only on an instance where that database can be replaced.
 5. Start the application: `python app.py` and open `http://127.0.0.1:5000`.
 
 The database is loaded from the included snapshot and does not need internet access. To reload it, run schema creation followed by population again. A local demo actor, `team5_admin`, is granted game permissions for writing examples. This is a course demo, not a public authentication service.
+
+## Open the website
+
+After MySQL is running and you have completed the setup above, open PowerShell in the cloned repository and run:
+
+```powershell
+cd .\src
+$env:DB_PASSWORD = "your-mysql-password"
+python app.py
+```
+
+If your MySQL user is not `root`, also set `$env:DB_USER`. The app uses `localhost:3306` by default; set `$env:DB_HOST` or `$env:DB_PORT` if yours differs. Open **http://127.0.0.1:5000/** in your browser. Keep the PowerShell window running while using the site; press Ctrl+C to stop it.
 
 ## Design changes
 
