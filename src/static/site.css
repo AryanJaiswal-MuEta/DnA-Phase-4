@@ -170,3 +170,22 @@ body.celeste-page{height:100vh;height:100dvh;overflow:hidden;display:flex;flex-d
 .celeste-page .celeste-rail-item:hover,.celeste-page .celeste-rail-item:focus-visible{padding-left:15px;transform:translateX(-3px);background:linear-gradient(125deg,#3c263ef5,#18243af5);border-color:#ff698d;box-shadow:0 10px 25px #05071388,0 0 16px #ff47742a}
 .celeste-page .celeste-rail-foot{padding-top:11px;padding-bottom:11px}
 @media(prefers-reduced-motion:reduce){.celeste-page .celeste-rail-item{transition:none}.celeste-page .celeste-rail-item:hover,.celeste-page .celeste-rail-item:focus-visible{transform:none}}
+
+/* The Mario game pages share the viewport and floating category rail. */
+.mario-page .mario-stage{background:radial-gradient(ellipse at 65% 42%,#9d33414d,transparent 52%),radial-gradient(ellipse at 90% 90%,#2475ad36,transparent 48%)}
+.mario-page .mario-copy{max-width:510px}
+.mario-page .mario-copy h1{font-size:clamp(48px,min(5.8vw,9vh),88px);line-height:.95;text-transform:uppercase;font-style:italic;max-width:500px;text-shadow:4px 5px 0 #601b37,0 8px 25px #000b}
+.mario-page .mario-copy p{max-width:320px}
+.mario-page .mario-art{position:absolute;z-index:0;right:210px;top:0;width:45%;height:100%;object-fit:cover;object-position:center bottom;opacity:.65;mask-image:linear-gradient(90deg,transparent 0%,#000 35%,#000 75%,transparent 100%);pointer-events:none}
+.mario-page .mario-stage .celeste-copy{z-index:2}
+.mario-page .mario-stage .celeste-rail{z-index:4}
+.mario-page .mario-stage .celeste-stats{z-index:3}
+.mario-page .celeste-stats{right:350px;gap:18px}
+.mario-page .celeste-stats>span{margin-right:12px;max-width:220px}
+.mario-page .celeste-stats strong{font-size:21px}
+.mario-page .sm64-stage .mario-art{object-position:center 74%}
+.mario-page .smb1-stage .mario-art{object-position:center 82%}
+@media(max-width:1050px){.mario-page .mario-copy h1{font-size:clamp(44px,min(6vw,8vh),70px)}.mario-page .mario-art{right:205px;width:48%;opacity:.52}}
+@media(max-width:1050px){.mario-page .celeste-stats>span{display:none}.mario-page .celeste-stats{right:310px}}
+@media(max-width:760px){.mario-page .mario-copy h1{font-size:clamp(39px,min(10vw,6vh),60px);max-width:280px}.mario-page .mario-art{right:-8px;top:0;width:58%;height:47%;opacity:.48;mask-image:linear-gradient(90deg,transparent,#000 25%,#000 85%,transparent)}.mario-page .mario-copy p{max-width:220px}}
+@media(max-width:430px){.mario-page .mario-copy h1{font-size:clamp(36px,min(10vw,6vh),48px);max-width:250px}.mario-page .mario-art{width:65%;height:46%}}
