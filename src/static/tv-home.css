@@ -142,3 +142,7 @@
 /* Use the same navigation bar as the Submit screen. */
 .home-page .submit-menu-top{position:relative;top:auto;left:auto;right:auto;width:100%;margin:0}
 @media(min-width:750px){.home-page main{height:calc(100svh - 70px)}}
+
+/* User-provided sepia collage behind the home scene. */
+.home-page{background:#24180f url('game-art/home-sepia-collage.png') center center/cover no-repeat}
+.home-page main{background:linear-gradient(90deg,#100b0ab8,#100b0aaf 48%,#100b0aba),url('game-art/home-sepia-collage.png') center center/cover no-repeat}
