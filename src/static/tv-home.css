@@ -123,3 +123,18 @@
 /* Taller cabinet and glass, without widening the TV. */
 @media(min-width:750px){.tv-screen{min-height:clamp(470px,65vh,680px)}}
 @media(max-height:760px) and (min-width:750px){.tv-screen{min-height:460px}}
+
+/* Fit the complete room inside a desktop viewport. */
+@media(min-width:750px){
+  .home-page{height:100svh;overflow:hidden}
+  .home-page main{height:calc(100svh - 83px);min-height:0;padding:0 24px;overflow:hidden}
+  .home-page footer{display:none}
+  .tv-room{height:100%;min-height:0;max-width:1800px;grid-template-columns:minmax(0,1fr) minmax(190px,27%);column-gap:clamp(18px,2vw,40px);grid-template-rows:1fr auto;padding:14px 14px 8px}
+  .tv-room-heading{grid-column:2;grid-row:1;align-self:start;margin:clamp(14px,5vh,55px) 0 0}
+  .cassette-shelf{grid-column:2;grid-row:1;align-self:end;margin-bottom:clamp(22px,5vh,65px)}
+  .tv-set{grid-column:1;grid-row:1;width:min(100%,920px);align-self:center}
+  .tv-screen{min-height:0;height:clamp(320px,calc(100svh - 180px),650px)}
+  .tv-room-footer{grid-column:1/-1;grid-row:2;margin:0;padding:8px 0 0}
+}
+@media(max-height:700px) and (min-width:750px){.tv-room-heading{margin-top:5px}.tv-room-heading h1{font-size:clamp(25px,2.3vw,36px)}.cassette-shelf{margin-bottom:13px}.tv-screen{height:calc(100svh - 185px)}}
+@media(max-height:700px) and (min-width:750px){.tv-antenna{top:-15px;height:30px}.tv-antenna i{height:35px}.tv-slot{bottom:-11px}.tv-slot span{top:13px}}
