@@ -63,3 +63,17 @@
 .submit-vignette{background:linear-gradient(90deg,#06101c8a 0%,#07121b48 30%,#07121b05 54%,#06101c40 78%,#040b1380 100%),linear-gradient(0deg,#040b1370,transparent 28%,#07111c30)}
 .submit-menu-aside{background:linear-gradient(160deg,#0a1824a6,#07121da8)}
 @media(max-width:750px){.submit-scene{background-position:58% center}.submit-vignette{background:linear-gradient(0deg,#06101dcc,#06101d5e 58%,#06101d73 100%),linear-gradient(90deg,#07101b55,transparent 70%)}}
+
+/* Six-stage route finder. */
+.submit-menu-left{top:90px}
+.submit-menu-left h1{font-size:clamp(32px,3.3vw,48px);margin:10px 0 8px}
+.submit-menu-left p{font-size:12px;margin-bottom:12px}
+.submit-menu-steps{gap:5px}
+.submit-menu-steps .submit-step{min-height:43px;padding:6px 10px;grid-template-columns:24px 1fr 18px}
+.submit-menu-steps .submit-step.is-complete .step-icon,.submit-menu-steps .submit-step.is-complete b{color:#8fe8d2}
+.submit-menu-steps .submit-step.is-complete{background:#0c2630bd}
+.step-icon{font-size:18px}
+@media(max-height:700px) and (min-width:751px){.submit-menu-left{top:78px}.submit-menu-left h1{font-size:35px}.submit-menu-left p{font-size:11px;margin-bottom:8px}.submit-menu-steps .submit-step{min-height:39px;padding:4px 9px}}
+@media(max-width:750px){.submit-menu-left{top:73px}.submit-menu-left h1{font-size:31px}.submit-menu-left p{display:none}.submit-menu-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.submit-menu-steps .submit-step{min-height:32px;padding:4px;justify-content:flex-start}.submit-menu-steps .submit-step strong{font-size:8px}.step-icon{font-size:13px}.submit-menu-aside{top:245px}}
+@media(max-width:430px){.submit-menu-aside{top:228px}}
+@media(max-height:700px) and (max-width:750px){.submit-menu-aside{top:205px}}
