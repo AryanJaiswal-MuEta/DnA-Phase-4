@@ -30,20 +30,25 @@
   }
   async function showBoard(id){
     try{const data=await request(`/api/tv/board/${encodeURIComponent(id)}`);state.board=data.board;state.run=null;
-      const items=data.runs.map(r=>`<button type="button" class="tv-choice tv-run-choice ${r.rank<=3?`tv-podium tv-podium-${r.rank}`:''}" data-run="${esc(r.run_id)}"><b>${String(r.rank).padStart(2,'0')}</b><span><strong>${esc(r.runner)}</strong><small>${esc(r.date)}</small></span><em>${esc(r.time)}</em></button>`).join('');
+      const items=data.runs.map(r=>`<div role="button" tabindex="0" aria-expanded="false" class="tv-choice tv-run-choice ${r.rank<=3?`tv-podium tv-podium-${r.rank}`:''}" data-run="${esc(r.run_id)}"><b>${String(r.rank).padStart(2,'0')}</b><span><strong>${esc(r.runner)}</strong><small>${esc(r.date)}</small></span><em>${esc(r.time)}</em></div>`).join('');
       const rules=data.board.rules?`<details class="tv-rules"><summary>BOARD RULES</summary><p>${esc(data.board.rules)}</p></details>`:'';
       screen('03 / LEADERBOARD',`${data.board.category} / ${data.board.level}`,`${data.board.platform} · ${data.runs.length} RUNNERS`,`<div class="tv-board-settings">${esc(data.board.settings)}</div>${items||'<p>No verified runs on this board yet.</p>'}${rules}`,'category');
     }catch(e){error(e.message)}
   }
-  async function showRun(id){
-    try{const data=await request(`/api/tv/run/${encodeURIComponent(id)}`);state.run=data.run;
-      const links=data.evidence.map((e,i)=>{const url=safeUrl(e.url);return url?`<a class="tv-evidence" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(e.label||e.kind||`EVIDENCE ${i+1}`)} ↗</a>`:''}).join('');
-      const source=safeUrl(data.run.source_url);
-      screen('04 / RUN DETAIL',data.run.runner,esc(data.run.status).toUpperCase(),`<div class="tv-run-time">${esc(data.run.time)}</div><div class="tv-run-meta">${esc(data.run.game)} / ${esc(data.run.category)}<br>${esc(data.run.date)}</div>${links}${source?`<a class="tv-evidence" href="${esc(source)}" target="_blank" rel="noopener noreferrer">ORIGINAL RUN ↗</a>`:''}`,'board');
+  async function showRun(row){
+    const existing=row.nextElementSibling;
+    if(existing?.classList.contains('tv-run-expanded')){existing.remove();row.setAttribute('aria-expanded','false');state.run=null;return}
+    app.querySelectorAll('.tv-run-expanded').forEach(panel=>panel.remove());app.querySelectorAll('.tv-run-choice[aria-expanded="true"]').forEach(item=>item.setAttribute('aria-expanded','false'));
+    try{const data=await request(`/api/tv/run/${encodeURIComponent(row.dataset.run)}`);state.run=data.run;
+      const video=data.evidence.find(e=>/video|twitch|youtube/i.test(`${e.kind} ${e.label}`))||data.evidence[0];
+      const videoUrl=video?safeUrl(video.url):null,source=safeUrl(data.run.source_url);
+      const links=`${videoUrl?`<a class="tv-evidence" href="${esc(videoUrl)}" target="_blank" rel="noopener noreferrer">VIDEO ↗</a>`:''}${source?`<a class="tv-evidence" href="${esc(source)}" target="_blank" rel="noopener noreferrer">RUN EVIDENCE ↗</a>`:''}`;
+      const panel=document.createElement('div');panel.className='tv-run-expanded';panel.innerHTML=`<time>${esc(data.run.date)}</time><div class="tv-run-expanded-links">${links||'<span>NO EVIDENCE LINKS</span>'}</div>`;
+      row.after(panel);row.setAttribute('aria-expanded','true');
     }catch(e){error(e.message)}
   }
   function library(){state.game=null;state.category=null;state.board=null;state.run=null;room.classList.remove('has-game','is-loading');app.hidden=true;app.innerHTML='';cassettes.forEach(c=>{c.classList.remove('is-inserted');c.style.visibility='' });preview(null)}
-  app.addEventListener('click',event=>{const button=event.target.closest('button');if(!button)return;
+  app.addEventListener('click',event=>{if(event.target.closest('a'))return;const runRow=event.target.closest('.tv-run-choice');if(runRow){showRun(runRow);return}const button=event.target.closest('button');if(!button)return;
     if(button.dataset.category)showCategory(button.dataset.category);
     else if(button.dataset.board)showBoard(button.dataset.board);
     else if(button.dataset.run)showRun(button.dataset.run);
@@ -52,6 +57,7 @@
     else if(button.dataset.back==='category'&&state.category)showCategory(state.category.category_id);
     else if(button.dataset.back==='board'&&state.board)showBoard(state.board.board_id);
   });
+  app.addEventListener('keydown',event=>{const row=event.target.closest('.tv-run-choice');if(row&&(event.key==='Enter'||event.key===' ')){event.preventDefault();showRun(row)}});
   cassettes.forEach(cassette=>{
     cassette.addEventListener('mouseenter',()=>preview(cassette));cassette.addEventListener('focus',()=>preview(cassette));
     cassette.addEventListener('mouseleave',()=>preview(null));cassette.addEventListener('blur',()=>preview(null));
