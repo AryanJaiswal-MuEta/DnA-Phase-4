@@ -95,3 +95,13 @@
 @media(max-height:760px) and (min-width:750px){.tv-screen{min-height:270px}.tv-controls::after{height:55px}}
 @media(max-width:749px){.tv-screen{min-height:250px}.tv-controls::after{height:50px}.tv-app{padding:9px}}
 @media(max-width:420px){.tv-screen{min-height:210px}.tv-controls::after{height:30px}.tv-body{grid-template-columns:minmax(0,1fr) 42px}.tv-controls i{width:23px;height:23px;border-width:3px}}
+
+/* Give the TV the lead in the room. */
+@media(min-width:750px){
+  .tv-display{max-width:1450px;grid-template-columns:minmax(0,1.55fr) minmax(210px,.7fr);column-gap:clamp(20px,3vw,60px)}
+  .tv-set{width:min(100%,740px)}
+  .tv-screen{min-height:clamp(360px,42vh,500px)}
+  .cassette-shelf{max-width:340px}
+}
+@media(max-height:760px) and (min-width:750px){.tv-screen{min-height:320px}.tv-room-heading{margin-bottom:5px}.tv-display{padding-top:18px}.tv-room-footer{margin-top:20px}}
+@media(max-width:749px){.tv-set{width:min(100%,620px)}.tv-screen{min-height:clamp(260px,52vw,380px)}}
