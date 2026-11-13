@@ -59,3 +59,5 @@ body::after{
 .section-head h2{border-left:3px solid #ff355e;padding-left:14px}
 .page-intro:not(.game-intro){background:linear-gradient(105deg,#ff355e0b,transparent 55%)}
 @media(prefers-reduced-motion:reduce){body,.hero::before,.glitch-word::before,.glitch-word::after,.game-row:hover::after,.game-row:focus-visible::after{animation:none}.game-row::after{display:none}}
+.game-art[src$="smb1-custom.png"]{object-position:center 82%}
+.game-intro-art[src$="smb1-custom.png"]{top:-95%}
