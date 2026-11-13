@@ -168,3 +168,9 @@
 .tv-run-time{color:#ffd084}.tv-run-meta{color:#dfc7a3}.tv-evidence{border-color:#bd8b50;color:#f2d5a5}.tv-evidence:hover{background:#624326}.tv-error{color:#ffedce}
 @media(max-height:700px) and (min-width:750px){.tv-controls .tv-slot{height:78px}}
 @media(max-width:650px){.tv-controls .tv-slot{width:26px;height:62px}.tv-controls .tv-slot span{display:none}}
+
+/* TV stays off until a game cassette is inserted. */
+.tv-screen{background:#000;box-shadow:inset 0 0 25px #000,0 3px 2px #d7aa78,0 0 0 2px #311f19}
+.tv-screen-copy,.tv-static,.tv-preview{display:none!important}
+.tv-room.has-game .tv-static{display:block!important}
+.tv-room.has-game .tv-preview.is-visible{display:block!important;opacity:.13}
