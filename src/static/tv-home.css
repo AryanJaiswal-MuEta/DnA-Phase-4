@@ -119,3 +119,11 @@
   .tv-room-footer{grid-column:1/-1;grid-row:3;width:100%;max-width:none;margin:42px 0 0}
 }
 @media(max-height:760px) and (min-width:750px){.tv-room{padding-top:22px}.tv-room-heading{margin-bottom:13px}.tv-room-heading h1{font-size:clamp(27px,2.6vw,39px)}.tv-room-heading p{font-size:11px}.tv-screen{min-height:350px}.game-cassette{height:92px}.tv-room-footer{margin-top:29px}}
+
+/* Wider screen while retaining the same cabinet height. */
+@media(min-width:750px){
+  .tv-room{max-width:1850px;grid-template-columns:minmax(0,1.9fr) minmax(215px,.55fr);column-gap:clamp(18px,2vw,45px)}
+  .tv-set{width:min(100%,1120px)}
+  .tv-screen{min-height:clamp(390px,44vh,510px)}
+}
+@media(max-height:760px) and (min-width:750px){.tv-screen{min-height:350px}}
