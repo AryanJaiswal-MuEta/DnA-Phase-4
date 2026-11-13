@@ -1,6 +1,7 @@
 <section class="tv-room" aria-label="Choose a game">
   <div class="tv-room-heading"><span>TAKA / GAME LIBRARY</span><h1>Pick a cassette.<br><em>Start a run.</em></h1><p>Choose a game from the shelf and load it into the screen.</p></div>
-  <div class="tv-set">
+  <div class="tv-display">
+  <div class="tv-set"><div class="tv-antenna" aria-hidden="true"><i></i><i></i></div>
     <div class="tv-body">
       <div class="tv-screen" id="tv-screen" aria-live="polite">
         <div class="tv-static" aria-hidden="true"></div>
@@ -9,7 +10,7 @@
       </div>
       <div class="tv-controls" aria-hidden="true"><span class="tv-led"></span><span>TAKA VISION</span><i></i><i></i></div>
     </div>
-    <div class="tv-base" aria-hidden="true"></div>
+    <div class="tv-base" aria-hidden="true"></div><div class="tv-feet" aria-hidden="true"><i></i><i></i></div>
     <div class="tv-slot" aria-hidden="true"><span>INSERT GAME</span></div>
   </div>
   <div class="cassette-shelf" aria-label="Game cassettes">
@@ -18,6 +19,7 @@
     </a>{% else %}<p class="empty">No games are available.</p>{% endfor %}
   </div>
   <div class="tv-room-footer"><span>{{games|length}} GAMES IN THE LIBRARY</span><span>HOVER TO PREVIEW · CLICK TO LOAD</span></div>
+  </div>
 </section>
 <script>
 (() => {
