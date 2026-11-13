@@ -101,6 +101,7 @@
 
 /* Match the Manage page navigation bar. */
 .submit-menu-top{height:70px;padding:0 38px}
+.runs-page .submit-menu-top,.run-detail-page .submit-menu-top,.reports-page .submit-menu-top{position:relative;z-index:20}
 .submit-menu-brand{font:700 20px var(--display);letter-spacing:-.07em;text-shadow:none}
 .submit-game-nav{gap:clamp(12px,2.3vw,36px)}
 .submit-game-nav a{font:700 10px var(--mono);letter-spacing:.13em}
