@@ -77,3 +77,11 @@
 @media(max-width:750px){.submit-menu-left{top:73px}.submit-menu-left h1{font-size:31px}.submit-menu-left p{display:none}.submit-menu-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.submit-menu-steps .submit-step{min-height:32px;padding:4px;justify-content:flex-start}.submit-menu-steps .submit-step strong{font-size:8px}.step-icon{font-size:13px}.submit-menu-aside{top:245px}}
 @media(max-width:430px){.submit-menu-aside{top:228px}}
 @media(max-height:700px) and (max-width:750px){.submit-menu-aside{top:205px}}
+
+/* The four route choices form one continuous mission panel. */
+.submit-menu-steps .submit-route-group{overflow:hidden;border:1px solid #9dc6d26b;border-radius:8px;background:#081722b8;box-shadow:0 10px 28px #020b1460}
+.submit-menu-steps .submit-route-group .submit-step{border:0;border-radius:0;background:transparent;box-shadow:none}
+.submit-menu-steps .submit-route-group .submit-step+.submit-step{border-top:1px solid #b7d4df33}
+.submit-menu-steps .submit-route-group .submit-step.is-active{background:linear-gradient(90deg,#75501ed9,#18303bc7);box-shadow:inset 3px 0 0 #ffca75,0 0 18px #ffbd4d3d}
+.submit-menu-steps .submit-route-group .submit-step.is-complete{background:#0c26307d}
+@media(max-width:750px){.submit-menu-steps .submit-route-group{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr)}.submit-menu-steps .submit-route-group .submit-step+.submit-step{border-top:0}.submit-menu-steps .submit-route-group .submit-step:nth-child(2n){border-left:1px solid #b7d4df33}.submit-menu-steps .submit-route-group .submit-step:nth-child(n+3){border-top:1px solid #b7d4df33}.submit-menu-steps>.submit-step{grid-column:span 1}.submit-menu-steps{grid-template-columns:repeat(2,1fr)}}
