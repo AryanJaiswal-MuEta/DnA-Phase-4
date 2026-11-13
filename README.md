@@ -1,4 +1,4 @@
-# Team 18 - Phase 4: Speedrun Atlas
+# Team 18 - Phase 4: TAKA
 
 Team 18's Phase 4 application implements the assigned Speedrun Leaderboard mini-world. The assigned source is Team 14's Phase 2 EER model and Team 5's Phase 3 relational mapping from the Questions Phase 4 folder. That assigned Team 5 report is included unchanged as `phase3.pdf`.
 

@@ -1,4 +1,4 @@
-/* Speedrun Atlas: archive, data desk, submission and control room. */
+/* TAKA: archive, data desk, submission and control room. */
 .experience-page{--xp-red:#ff436c;--xp-cyan:#6ee7e8;--xp-gold:#ffd184;--xp-line:#48516c;--xp-ink:#0b0f1a;background:radial-gradient(ellipse at 85% 8%,#4b1d4660,transparent 34%),radial-gradient(ellipse at 5% 48%,#10395058,transparent 35%),#090c16}
 .experience-page .site-header{position:relative;z-index:20}.experience-page .site-header nav a.active{color:#fff;text-shadow:0 0 16px var(--xp-red)}
 .experience-page main{max-width:1440px;padding:0 36px 110px}.experience-shell{position:relative}.experience-shell::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#a3c1e907 1px,transparent 1px),linear-gradient(90deg,#a3c1e907 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(#000,transparent 65%)}
