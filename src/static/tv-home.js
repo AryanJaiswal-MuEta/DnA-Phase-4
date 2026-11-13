@@ -8,7 +8,7 @@
   const safeUrl=value=>{try{const url=new URL(value);return ['https:','http:'].includes(url.protocol)?url.href:null}catch{return null}};
   const request=async path=>{const response=await fetch(path,{headers:{Accept:'application/json'}});if(!response.ok)throw Error(`Could not load this screen (${response.status}).`);return response.json()};
   function artwork(id){document.querySelectorAll('.tv-preview').forEach(img=>img.classList.toggle('is-visible',img.dataset.game===id))}
-  function preview(cassette){if(state.game)return;const id=cassette?.dataset.game;artwork(id);title.textContent=cassette?cassette.dataset.title:'READY PLAYER ONE';status.textContent=cassette?'GAME DETECTED':'SELECT A CASSETTE';detail.textContent=cassette?`${cassette.dataset.boards} BOARDS · CLICK TO LOAD`:'3 GAMES · SELECT TO LOAD'}
+  function preview(cassette){if(state.game)return;const id=cassette?.dataset.game;room.classList.toggle('is-previewing',!!cassette);artwork(id);title.textContent=cassette?cassette.dataset.title:'READY PLAYER ONE';status.textContent=cassette?'GAME DETECTED':'SELECT A CASSETTE';detail.textContent=cassette?`${cassette.dataset.boards} BOARDS · CLICK TO LOAD`:'3 GAMES · SELECT TO LOAD'}
   function screen(step,heading,meta,body,back){
     room.classList.remove('is-loading');room.classList.add('has-game');
     app.hidden=false;app.innerHTML=`<div class="tv-app-head"><button class="tv-back" type="button" data-back="${back}" aria-label="Go back">←</button><span>${esc(step)}</span><small>${esc(meta)}</small></div><h2>${esc(heading)}</h2><div class="tv-app-content">${body}</div>`;

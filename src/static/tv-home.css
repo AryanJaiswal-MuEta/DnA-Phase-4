@@ -174,3 +174,4 @@
 .tv-screen-copy,.tv-static,.tv-preview{display:none!important}
 .tv-room.has-game .tv-static{display:block!important}
 .tv-room.has-game .tv-preview.is-visible{display:block!important;opacity:.13}
+.tv-room.is-previewing .tv-preview.is-visible{display:block!important;opacity:.9}
