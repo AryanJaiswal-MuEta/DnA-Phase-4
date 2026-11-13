@@ -21,3 +21,41 @@ body{background:radial-gradient(circle at 85% 10%,#24142b 0,transparent 32%),var
 @media(max-width:600px){.game-list{grid-template-columns:1fr}.game-row{min-height:300px}.game-intro-art{width:70%;opacity:.35}.hero:after{opacity:.45}}
 @media(prefers-reduced-motion:reduce){.game-art,.game-row{transition:none}.game-row:hover{transform:none}}
 .game-row:hover:before,.game-row:focus-visible:before{background:linear-gradient(0deg,#080b15f2 0%,#080b155e 60%,#080b151a 100%)}.game-row:hover .game-title,.game-row:focus-visible .game-title{color:#fff}.game-row:focus-visible{outline:2px solid #49d9ff;outline-offset:3px}
+
+/* Animated gaming atmosphere */
+body{
+  background-color:#090b13;
+  background-image:radial-gradient(ellipse at 80% 12%,#451a4c55,transparent 42%),radial-gradient(ellipse at 10% 82%,#0d476149,transparent 38%),linear-gradient(#6b789011 1px,transparent 1px),linear-gradient(90deg,#6b789011 1px,transparent 1px);
+  background-size:auto,auto,52px 52px,52px 52px;
+  animation:grid-drift 28s linear infinite;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:10;
+  background:repeating-linear-gradient(0deg,transparent 0 3px,#02050d2b 4px 5px);
+  opacity:.22;
+}
+@keyframes grid-drift{to{background-position:0 0,0 0,52px 52px,52px 52px}}
+.hero{isolation:isolate}
+.hero::before{
+  content:"";position:absolute;right:2%;top:9%;width:min(37vw,420px);aspect-ratio:1;z-index:-1;pointer-events:none;
+  border:1px solid #ff355e35;border-radius:50%;
+  background:radial-gradient(circle,transparent 0 15%,#ff355e19 15.2% 15.5%,transparent 15.7% 37%,#49d9ff21 37.2% 37.5%,transparent 37.7% 62%,#ff355e22 62.2% 62.5%,transparent 62.7%);
+  box-shadow:0 0 60px #ff355e12,inset 0 0 60px #49d9ff0d;
+  animation:radar-pulse 7s ease-in-out infinite alternate;
+}
+@keyframes radar-pulse{from{transform:scale(.96) rotate(-5deg);opacity:.45}to{transform:scale(1.08) rotate(5deg);opacity:.9}}
+.glitch-word{position:relative;display:inline-block}
+.glitch-word::before,.glitch-word::after{content:attr(data-text);position:absolute;inset:0;pointer-events:none;opacity:0}
+.glitch-word::before{color:#49d9ff;animation:glitch-cyan 6.5s steps(1,end) infinite}
+.glitch-word::after{color:#ff7890;animation:glitch-red 6.5s steps(1,end) infinite}
+@keyframes glitch-cyan{0%,90%,94%,100%{opacity:0;transform:none}91%{opacity:.8;transform:translate(-5px,2px);clip-path:inset(8% 0 68% 0)}92%{opacity:.7;transform:translate(4px,-2px);clip-path:inset(56% 0 18% 0)}93%{opacity:0}}
+@keyframes glitch-red{0%,90%,94%,100%{opacity:0;transform:none}91%{opacity:.8;transform:translate(4px,-2px);clip-path:inset(62% 0 8% 0)}92%{opacity:.7;transform:translate(-3px,2px);clip-path:inset(12% 0 60% 0)}93%{opacity:0}}
+.game-row::after{content:"";position:absolute;inset:-120% -75%;pointer-events:none;background:linear-gradient(115deg,transparent 44%,#49d9ff00 46%,#49d9ff60 50%,#49d9ff00 54%,transparent 56%);transform:translateX(-70%) rotate(4deg);opacity:0}
+.game-row:hover::after,.game-row:focus-visible::after{animation:card-scan .65s ease-out forwards}
+@keyframes card-scan{0%{opacity:0;transform:translateX(-70%) rotate(4deg)}25%{opacity:.65}100%{opacity:0;transform:translateX(75%) rotate(4deg)}}
+.category-row{position:relative;overflow:hidden}
+.category-row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#49d9ff;transform:scaleY(0);transform-origin:center;transition:transform .2s}
+.category-row:hover::before,.category-row:focus-visible::before{transform:scaleY(1)}
+.section-head h2{border-left:3px solid #ff355e;padding-left:14px}
+.page-intro:not(.game-intro){background:linear-gradient(105deg,#ff355e0b,transparent 55%)}
+@media(prefers-reduced-motion:reduce){body,.hero::before,.glitch-word::before,.glitch-word::after,.game-row:hover::after,.game-row:focus-visible::after{animation:none}.game-row::after{display:none}}
