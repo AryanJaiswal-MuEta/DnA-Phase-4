@@ -43,3 +43,19 @@
 .admin-page .controls-section{max-width:1200px;margin:0 auto}.admin-page .control-tabs button[aria-selected=true],.admin-page .xp-submit{background:#72deec;color:#08232b;border-color:#72deec}.admin-page .xp-section-head h2 span{color:#72deec}.admin-page .control-panel{border-color:#47717a;background:linear-gradient(140deg,#12303a,#091d29)}.admin-page .control-panel-copy{background:radial-gradient(circle at 60% 80%,#1b849066,transparent 48%),#0b2631}.admin-page .control-decoration{color:#72deec1e}
 @media(max-width:750px){.admin-page main{padding:0 18px 70px}.admin-page .admin-hero{min-height:760px;margin:0 -18px 35px;background-position:59% center}.admin-hero-nav{height:55px;padding:0 14px;gap:8px}.admin-hero-brand{font-size:16px}.admin-hero-brand small,.admin-team{display:none}.admin-hero-nav nav{gap:8px}.admin-hero-nav nav a{font-size:7px;letter-spacing:0}.admin-page .admin-hero .hero-content{width:90%;margin:95px 0 0 6%}.admin-page .admin-hero h1{font-size:clamp(54px,13vw,82px)}.admin-page .admin-hero .hero-content p{max-width:300px;font-size:13px}.admin-hero-bottom{left:6%;right:6%;padding:15px 0}.admin-hero-bottom div{min-width:0;flex:1;display:block;padding:0 8px}.admin-hero-bottom strong{display:block;font-size:23px}.admin-hero-bottom>a{display:none}}
 @media(prefers-reduced-motion:reduce){.admin-page .admin-hero *{animation:none}}
+
+/* Manage controls open in place over the landscape. */
+.admin-page{height:100vh;height:100dvh;overflow:hidden}
+.admin-page main{height:100%;padding-bottom:0}
+.admin-page footer{display:none}
+.admin-page .experience-shell{height:100%}
+.admin-page .admin-hero{height:100%;min-height:0;margin-bottom:0}
+.admin-page .controls-section{position:absolute;z-index:10;top:80px;right:18px;bottom:12px;width:min(455px,calc(100% - 36px));max-width:none;margin:0;overflow-y:auto;overscroll-behavior:contain;border:1px solid #b1edf299;border-radius:15px;background:linear-gradient(150deg,#092b37eb,#041b27ed);box-shadow:0 20px 60px #00141dbb;backdrop-filter:blur(17px);padding:18px 20px;scrollbar-width:thin;scrollbar-color:#7be4ef #173e47;animation:admin-drawer-in .28s ease-out}
+.admin-page .controls-section[hidden]{display:none}
+.admin-drawer-head{display:flex;align-items:start;justify-content:space-between;gap:15px;padding-bottom:10px;border-bottom:1px solid #8acbd05c}.admin-drawer-head span{color:#8ce6ed;font:700 9px var(--mono);letter-spacing:.14em}.admin-drawer-head h2{margin:4px 0 0;color:#fff;font:700 25px var(--display);letter-spacing:-.05em}.admin-drawer-close{border:1px solid #8acbd07d;border-radius:6px;background:#123a46;color:#d9fbfd;width:30px;height:30px;font-size:14px}.admin-drawer-close:hover{background:#7ce3ef;color:#05222a}
+.admin-page .control-tabs{margin:12px 0 0;gap:6px;flex-wrap:nowrap}.admin-page .control-tabs button{padding:9px 11px;gap:6px;font-size:9px}.admin-page .control-tabs button span{font-size:12px}
+.admin-page .control-panel{display:block;padding:0;margin-top:12px;border:0;border-radius:0;background:transparent;box-shadow:none}.admin-page .control-panel[hidden]{display:none}.admin-page .control-panel-copy{display:none}
+.admin-page .xp-form label{margin:9px 0 4px;font-size:9px}.admin-page .xp-form input,.admin-page .xp-form select{min-height:36px;padding:7px 10px;font-size:12px}.admin-page .xp-form textarea{min-height:68px;padding:8px 10px;font-size:12px}.admin-page .xp-submit{min-height:40px;margin-top:12px;padding:9px 13px}
+@keyframes admin-drawer-in{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+@media(max-width:750px){.admin-page main{padding:0}.admin-page .admin-hero{margin:0;height:100%}.admin-page .controls-section{top:60px;right:8px;bottom:8px;width:calc(100% - 16px);padding:14px}.admin-page .admin-hero .hero-content{margin-top:clamp(70px,13vh,110px)}.admin-hero-bottom{bottom:0}}
+@media(prefers-reduced-motion:reduce){.admin-page .controls-section{animation:none}}
