@@ -61,3 +61,4 @@
 @media(prefers-reduced-motion:reduce){.admin-page .controls-section{animation:none}}
 
 .admin-drawer-close{margin-top:24px}
+.admin-page .admin-drawer-close{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;padding:0;line-height:1;font:700 16px/1 Arial,sans-serif}
