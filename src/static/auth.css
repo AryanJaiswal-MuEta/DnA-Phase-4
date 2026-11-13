@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-.auth-page{min-height:100vh;background-color:#071014;background-image:linear-gradient(90deg,#06100e14 0%,#07101124 42%,#07101870 100%),linear-gradient(0deg,#02080945,transparent 72%),var(--login-bg);background-position:center;background-size:cover;background-repeat:no-repeat;color:#f3eee3}
+.auth-page{min-height:100vh;background-color:#071014;background-image:linear-gradient(90deg,#06100e14 0%,#07101124 42%,#07101870 100%),linear-gradient(0deg,#02080945,transparent 72%),var(--login-bg);background-position:center;background-size:cover;background-repeat:no-repeat;background-attachment:fixed;color:#f3eee3}
 .auth-shell{position:relative;display:flex;min-height:100vh;width:100%;flex-direction:column;align-items:flex-end;justify-content:center;padding:clamp(24px,4vw,56px) clamp(24px,2.2vw,42px) clamp(24px,4vw,56px) clamp(24px,5vw,72px)}
 .auth-brand{position:absolute;top:28px;left:clamp(24px,5vw,72px);display:inline-block;color:#f2eee5;font:800 20px var(--display);letter-spacing:.08em;text-decoration:none;text-shadow:0 2px 12px #000}.auth-brand span{margin-left:10px;color:#e1e9df;font:700 10px var(--mono);letter-spacing:.15em}
 .auth-intro,.auth-card,.auth-error{width:min(100%,440px);margin-right:0}
