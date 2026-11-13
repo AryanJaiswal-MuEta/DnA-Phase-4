@@ -154,3 +154,16 @@
 .tv-controls .tv-slot span{position:absolute;top:2px;left:21px;width:auto;height:100%;color:#f1c692;font:700 7px var(--mono);letter-spacing:.07em;writing-mode:vertical-rl;white-space:nowrap}
 @media(max-height:700px) and (min-width:750px){.tv-controls .tv-slot{bottom:auto;height:56px;margin-top:6px}.tv-controls .tv-slot span{top:0}}
 @media(max-width:650px){.tv-controls .tv-slot{width:13px;height:45px;margin-top:5px}.tv-controls .tv-slot span{display:none}}
+
+/* Warm amber display palette and a wider cassette opening. */
+.tv-controls .tv-slot{width:30px;height:66px;border-color:#c38a4c;background:#080604}
+.tv-controls .tv-slot span{left:32px;color:#f3c98e}
+.tv-app{background:linear-gradient(110deg,#21170ff5,#352317f2);color:#f7e5c5}
+.tv-app-head{color:#e9b66e}.tv-app-head small{color:#d1b78f}
+.tv-back{border-color:#a87843;background:#302115;color:#ffd697}.tv-back:hover{background:#805329;color:#fff0cf}
+.tv-app h2{color:#fff0d5}.tv-app-content{scrollbar-color:#b57d43 #2b2017}.tv-app-content p{color:#dfc8a5}
+.tv-choice{border-color:#a878435e;background:#39291bdc;color:#fff0d5}.tv-choice:hover,.tv-choice:focus-visible{background:#78502b;color:#fff4dc;outline-color:#f0bd72}
+.tv-choice>b,.tv-choice small{color:#dfb777}.tv-choice em{color:#f4c981}
+.tv-board-settings{border-left-color:#e1ad65;background:#382719;color:#ead4b0}.tv-rules{border-color:#89633a}.tv-rules summary{color:#f2c57e}
+.tv-run-time{color:#ffd084}.tv-run-meta{color:#dfc7a3}.tv-evidence{border-color:#bd8b50;color:#f2d5a5}.tv-evidence:hover{background:#624326}.tv-error{color:#ffedce}
+@media(max-width:650px){.tv-controls .tv-slot{width:22px;height:48px}.tv-controls .tv-slot span{display:none}}
