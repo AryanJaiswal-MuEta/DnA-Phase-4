@@ -183,4 +183,10 @@
 .tv-choice:is(:hover,:focus-visible)::before{opacity:1;transform:translate(-5%,-50%) scale(1)}
 .tv-choice strong{font-size:14px}.tv-choice small{font-size:9px}
 .tv-choice>b{font-size:10px}.tv-choice i,.tv-choice em{font-size:12px}
+.tv-choice{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;min-height:62px;margin:0 0 3px;padding:7px 28px;border:0;border-radius:0;background:transparent;color:#fff0d5;text-align:center;transform:none;box-shadow:none}
+.tv-choice:hover,.tv-choice:focus-visible{background:transparent;color:#ffe0a3;transform:scale(1.015);outline:none;text-shadow:0 0 9px #ffd0848a}
+.tv-choice>b,.tv-choice span,.tv-choice strong,.tv-choice small,.tv-choice i,.tv-choice em{width:100%;text-align:center}
+.tv-choice i{position:absolute;right:8px;top:50%;width:auto;transform:translateY(-50%)}
+.tv-choice::before{left:8px}
+.tv-choice:is(:hover,:focus-visible)::before{transform:translate(0,-50%) scale(1)}
 .tv-preview[src$="celeste-generated.png"]{object-fit:cover}
