@@ -37,27 +37,15 @@ def login():
     if request.method=='POST':
         username=request.form.get('username','').strip()
         password=request.form.get('password','')
-        requested_role=request.form.get('role','user')
         if not username or not password:
             error='Enter both username and password.'
-        elif requested_role=='admin':
-            admin_username=os.getenv('ADMIN_USERNAME','')
-            admin_password=os.getenv('ADMIN_PASSWORD','')
-            if not admin_username or not admin_password:
-                error='Admin login is not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD before starting the app.'
-            elif hmac.compare_digest(username,admin_username) and hmac.compare_digest(password,admin_password):
-                session.clear(); session.update(role='admin',username=username)
-                return redirect(url_for('home'))
-            else:
-                error='Admin credentials did not match.'
-        elif requested_role=='user':
-            session.clear(); session.update(role='user',username=username)
+        else:
+            is_admin=hmac.compare_digest(username,'taka') and hmac.compare_digest(password,'takataka')
+            session.clear(); session.update(role='admin' if is_admin else 'user',username=username)
             target=request.args.get('next','')
-            if target.startswith('/') and not target.startswith('//'):
+            if target.startswith('/') and not target.startswith('//') and not (is_admin and target.startswith('/submit')):
                 return redirect(target)
             return redirect(url_for('home'))
-        else:
-            error='Choose a login type.'
     return render_template_string(LOGIN_PAGE,error=error)
 
 @app.get('/logout')
@@ -65,7 +53,7 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-LOGIN_PAGE='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAKA / Login</title><link rel="stylesheet" href="{{url_for('static',filename='site.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='auth.css')}}"></head><body class="auth-page"><main class="auth-shell"><a class="auth-brand" href="/">TAKA <span>/ TEAM 18</span></a><p class="auth-kicker">PLAYER ACCESS / TAKA NETWORK</p><h1>Sign in to<br><em>the leaderboard.</em></h1><p class="auth-copy">Choose your access level to continue.</p>{% if error %}<p class="auth-error" role="alert">{{error}}</p>{% endif %}<div class="auth-grid"><form method="post" class="auth-card"><input type="hidden" name="role" value="user"><span class="auth-number">01 / PLAYER</span><h2>User login</h2><label>USERNAME<input name="username" autocomplete="username" required></label><label>PASSWORD<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">ENTER AS USER <b>↗</b></button><small>Player access: games, runs, reports, and submissions.</small></form><form method="post" class="auth-card auth-admin"><input type="hidden" name="role" value="admin"><span class="auth-number">02 / CONTROL ROOM</span><h2>Admin login</h2><label>USERNAME<input name="username" autocomplete="username" required></label><label>PASSWORD<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">ENTER AS ADMIN <b>↗</b></button><small>Administrator access includes Manage and run moderation.</small></form></div><footer class="auth-foot">TAKA <span>TEAM 18 / PHASE 4</span></footer></main></body></html>'''
+LOGIN_PAGE='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAKA / Login</title><link rel="stylesheet" href="{{url_for('static',filename='site.css')}}"><link rel="stylesheet" href="{{url_for('static',filename='auth.css')}}"></head><body class="auth-page"><main class="auth-shell"><a class="auth-brand" href="/">TAKA <span>/ TEAM 18</span></a><p class="auth-kicker">PLAYER ACCESS / TAKA NETWORK</p><h1>Sign in to<br><em>the leaderboard.</em></h1><p class="auth-copy">Enter your username and password to continue.</p>{% if error %}<p class="auth-error" role="alert">{{error}}</p>{% endif %}<form method="post" class="auth-card"><label>USERNAME<input name="username" autocomplete="username" required autofocus></label><label>PASSWORD<input type="password" name="password" autocomplete="current-password" required></label><button type="submit">SIGN IN <b>↗</b></button><small>Player access includes Games, Runs, Reports, and Submit.</small></form><footer class="auth-foot">TAKA <span>TEAM 18 / PHASE 4</span></footer></main></body></html>'''
 
 def db():
     local=json.loads(LOCAL_CREDENTIALS.read_text()) if LOCAL_CREDENTIALS.exists() else {}

@@ -20,7 +20,7 @@ From the `src/` directory:
 4. Populate: `python populate.py`. The schema script drops and recreates `speedrun_phase4`; run it only on an instance where that database can be replaced.
 5. Start the application: `python app.py` and open `http://127.0.0.1:5000`.
 
-The database is loaded from the included snapshot and does not need internet access. To reload it, run schema creation followed by population again. A local demo actor, `team5_admin`, is granted game permissions for writing examples. The login page has two roles. User access accepts a nonempty username and password and is limited to Games, Runs, Reports, and Submit. Admin access requires the `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables; admins can use Manage and review or delete pending runs, but cannot use Submit. Login sessions use Flask’s signed session cookie; set a stable random `SECRET_KEY` before launching. User accounts are demo identities rather than individually stored/password-checked accounts.
+The database is loaded from the included snapshot and does not need internet access. To reload it, run schema creation followed by population again. A local demo actor, `team5_admin`, is granted game permissions for writing examples. The login page has two roles. User access accepts a nonempty username and password and is limited to Games, Runs, Reports, and Submit. Admin access is selected when the username is `taka` and the password is `takataka`; admins can use Manage and review or delete pending runs, but cannot use Submit. Login sessions use Flask’s signed session cookie; set a stable random `SECRET_KEY` before launching. User accounts are demo identities rather than individually stored/password-checked accounts.
 
 ## Open the website
 
@@ -30,12 +30,10 @@ After MySQL is running and you have completed the setup above, open PowerShell i
 cd .\src
 $env:DB_PASSWORD = "your-mysql-password"
 $env:SECRET_KEY = "replace-with-a-long-random-value"
-$env:ADMIN_USERNAME = "choose-admin-username"
-$env:ADMIN_PASSWORD = "choose-admin-password"
 python app.py
 ```
 
-If your MySQL user is not `root`, also set `$env:DB_USER`. The app uses `localhost:3306` by default; set `$env:DB_HOST` or `$env:DB_PORT` if yours differs. Before starting, configure `$env:SECRET_KEY` to a long random value and set `$env:ADMIN_USERNAME` and `$env:ADMIN_PASSWORD` for the administrator account. Open **http://127.0.0.1:5000/** in your browser; it redirects to the login page. Keep the PowerShell window running while using the site; press Ctrl+C to stop it.
+If your MySQL user is not `root`, also set `$env:DB_USER`. The app uses `localhost:3306` by default; set `$env:DB_HOST` or `$env:DB_PORT` if yours differs. Before starting, configure `$env:SECRET_KEY` to a long random value. Open **http://127.0.0.1:5000/** in your browser; it redirects to the login page. Keep the PowerShell window running while using the site; press Ctrl+C to stop it.
 
 ## Design changes
 
