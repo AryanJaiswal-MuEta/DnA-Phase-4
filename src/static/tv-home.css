@@ -46,3 +46,23 @@
 @media(max-width:749px){.tv-display{width:100%}.tv-antenna{top:-55px}.tv-room{padding-top:75px}.tv-room-heading{margin-bottom:18px}.tv-set{margin-bottom:33px}}
 @media(max-width:650px){.tv-room{padding-top:65px}.tv-body{border-width:3px;border-radius:22px}.tv-screen{border-width:7px;border-radius:25px}.tv-controls::after{width:30px;height:32px}.tv-antenna{transform:translateX(-50%) scale(.7);top:-54px}}
 @media(max-height:760px) and (min-width:750px){.tv-room-heading h1{font-size:clamp(43px,4vw,65px)}.tv-room-heading::after{margin-top:26px}.tv-display{padding-top:26px}.tv-set{margin-bottom:26px}.tv-screen{min-height:210px}.tv-controls::after{height:32px}.game-cassette{height:95px}}
+
+/* TV left, tapes right. Keep the cabinet closer to a classic 4:3 set. */
+@media(min-width:750px){
+  .tv-room{display:flex;flex-direction:column;justify-content:center;gap:0;max-width:1450px;padding:20px 0 22px}
+  .tv-room-heading{align-self:stretch;text-align:center;margin:0 auto 24px;padding:0}
+  .tv-room-heading h1{max-width:none;font-size:clamp(38px,3.7vw,58px);line-height:1.02;margin:9px 0}
+  .tv-room-heading p{max-width:none;font-size:13px}
+  .tv-room-heading::after{display:none}
+  .tv-display{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr);column-gap:clamp(28px,4vw,75px);align-items:center;max-width:1200px;width:100%;padding:35px 15px 0}
+  .tv-set{grid-column:1;grid-row:1;width:min(100%,560px);margin:0 auto}
+  .tv-screen{min-height:clamp(270px,31vh,385px)}
+  .cassette-shelf{grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:16px;align-self:center;width:100%;max-width:400px;margin:0;padding:10px 0 15px;border-bottom-width:10px}
+  .game-cassette{flex:none;width:100%;height:112px}
+  .tv-room-footer{grid-column:1/-1;grid-row:2;max-width:none;width:100%;margin:38px 0 0;padding-top:13px;border-top:1px solid #a36b4359}
+}
+@media(max-height:760px) and (min-width:750px){
+  .tv-room-heading{margin-bottom:10px}.tv-room-heading h1{font-size:clamp(34px,3vw,46px)}
+  .tv-display{padding-top:25px}.tv-screen{min-height:250px}.game-cassette{height:94px}.cassette-shelf{gap:10px}
+  .tv-room-footer{margin-top:25px}
+}
