@@ -1,0 +1,26 @@
+<div class="experience-shell">
+  <section class="experience-hero runs-hero">
+    <div class="hero-content">
+      <span class="eyebrow"><span class="live-dot"></span> 01 / RUN ARCHIVE</span>
+      <h1>THE CLOCK<br><em>NEVER LIES.</em></h1>
+      <p>Every submission has a story. Follow the evidence, track review status, and see who moved the leaderboard.</p>
+      <div class="hero-actions"><a class="xp-button" href="{{url_for('submit')}}">SUBMIT A RUN <span>↗</span></a><span class="hero-note">LATEST {{rows|length}} SUBMISSIONS</span></div>
+    </div>
+    <div class="clock-art" aria-hidden="true"><div class="clock-face"><span>00</span><i>:</i><span>00</span><i>.</i><span>00</span></div><div class="clock-sweep"></div><span class="clock-caption">PRECISION / PROOF / PLACE</span></div>
+  </section>
+  <div class="metric-grid runs-metrics" aria-label="Status in current view">
+    <div class="metric-card"><span>01 / VISIBLE</span><strong>{{rows|length}}</strong><small>RUNS IN THIS VIEW</small></div>
+    <div class="metric-card teal"><span>02 / APPROVED</span><strong>{{verified}}</strong><small>VERIFIED</small></div>
+    <div class="metric-card amber"><span>03 / QUEUED</span><strong>{{pending}}</strong><small>AWAITING REVIEW</small></div>
+    <div class="metric-card rose"><span>04 / DECLINED</span><strong>{{rejected}}</strong><small>REJECTED</small></div>
+  </div>
+  <section class="xp-section" id="archive">
+    <div class="xp-section-head"><div><span class="eyebrow">BROWSE / FILTER</span><h2>Run feed<span>.</span></h2></div><span class="section-count">MOST RECENT FIRST</span></div>
+    <nav class="filter-tabs" aria-label="Filter runs by status">
+      {% for s in ['all','new','verified','rejected'] %}<a href="{{url_for('runs',status=s)}}" class="{{'selected' if s==status else ''}}" aria-current="{{'page' if s==status else 'false'}}">{{s|upper}}</a>{% endfor %}
+    </nav>
+    <div class="run-feed">
+      {% for r in rows %}<a class="run-feed-row" href="{{url_for('run_detail',rid=r.run_id)}}"><span class="run-feed-index">{{'%02d'|format(loop.index)}}</span><span class="run-feed-title"><strong>{{r.title_international}}</strong><small>{{r.category_name}} · {{r.display_name}}</small></span><span class="run-feed-time">{{format_duration(r.duration_ms)}}</span><span class="status status-{{r.current_status}}">{{r.current_status}}</span><span class="run-feed-arrow" aria-hidden="true">↗</span></a>{% else %}<p class="xp-empty">No runs in this view. <a href="{{url_for('runs')}}">Show all runs ↗</a></p>{% endfor %}
+    </div>
+  </section>
+</div>
