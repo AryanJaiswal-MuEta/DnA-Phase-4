@@ -175,3 +175,4 @@
 .tv-room.has-game .tv-static{display:block!important}
 .tv-room.has-game .tv-preview.is-visible{display:block!important;opacity:.13}
 .tv-room.is-previewing .tv-preview.is-visible{display:block!important;opacity:.9}
+.tv-preview{object-fit:contain;background:#000}
