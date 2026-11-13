@@ -1,0 +1,52 @@
+<section class="tv-room" aria-label="Choose a game">
+  <div class="tv-room-heading"><span>TAKA / GAME LIBRARY</span><h1>Pick a cassette.<br><em>Start a run.</em></h1><p>Choose a game from the shelf and load it into the screen.</p></div>
+  <div class="tv-set">
+    <div class="tv-body">
+      <div class="tv-screen" id="tv-screen" aria-live="polite">
+        <div class="tv-static" aria-hidden="true"></div>
+        {% for g in games %}{% if art.get(g.slug) %}<img class="tv-preview" data-game="{{g.game_id}}" src="{{url_for('static',filename=art[g.slug])}}" alt="">{% endif %}{% endfor %}
+        <div class="tv-screen-copy"><small id="tv-status">SELECT A CASSETTE</small><strong id="tv-title">READY<br>PLAYER ONE</strong><span id="tv-detail">{{games|length}} GAMES · {{total}} BOARDS</span></div>
+      </div>
+      <div class="tv-controls" aria-hidden="true"><span class="tv-led"></span><span>TAKA VISION</span><i></i><i></i></div>
+    </div>
+    <div class="tv-base" aria-hidden="true"></div>
+    <div class="tv-slot" aria-hidden="true"><span>INSERT GAME</span></div>
+  </div>
+  <div class="cassette-shelf" aria-label="Game cassettes">
+    {% for g in games %}<a class="game-cassette" href="{{url_for('game',gid=g.game_id)}}" data-game="{{g.game_id}}" data-title="{{g.title_international}}" data-boards="{{g.boards}}" aria-label="Load {{g.title_international}}">
+      <span class="cassette-grip" aria-hidden="true"></span><span class="cassette-label"><small>{{'%02d'|format(loop.index)}} / {{g.slug|upper}}</small><strong>{{g.title_international}}</strong><span>{{g.boards}} BOARDS <b aria-hidden="true">↗</b></span></span><span class="cassette-edge" aria-hidden="true"></span>
+    </a>{% else %}<p class="empty">No games are available.</p>{% endfor %}
+  </div>
+  <div class="tv-room-footer"><span>{{games|length}} GAMES IN THE LIBRARY</span><span>HOVER TO PREVIEW · CLICK TO LOAD</span></div>
+</section>
+<script>
+(() => {
+  const room=document.querySelector('.tv-room'),cassettes=[...document.querySelectorAll('.game-cassette')],title=document.getElementById('tv-title'),status=document.getElementById('tv-status'),detail=document.getElementById('tv-detail');
+  if(!room)return;
+  function preview(cassette){
+    const id=cassette?.dataset.game;
+    room.dataset.preview=id||'';
+    document.querySelectorAll('.tv-preview').forEach(img=>img.classList.toggle('is-visible',img.dataset.game===id));
+    title.textContent=cassette?cassette.dataset.title:'READY PLAYER ONE';
+    status.textContent=cassette?'GAME DETECTED':'SELECT A CASSETTE';
+    detail.textContent=cassette?cassette.dataset.boards+' BOARDS · CLICK TO LOAD':'{{games|length}} GAMES · {{total}} BOARDS';
+  }
+  cassettes.forEach(cassette=>{
+    cassette.addEventListener('mouseenter',()=>preview(cassette));
+    cassette.addEventListener('focus',()=>preview(cassette));
+    cassette.addEventListener('mouseleave',()=>{if(!room.classList.contains('is-loading'))preview(null)});
+    cassette.addEventListener('blur',()=>{if(!room.classList.contains('is-loading'))preview(null)});
+    cassette.addEventListener('click',event=>{
+      if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+      if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+      event.preventDefault();if(room.classList.contains('is-loading'))return;
+      preview(cassette);room.classList.add('is-loading');status.textContent='LOADING GAME';
+      const rect=cassette.getBoundingClientRect(),slot=document.querySelector('.tv-slot').getBoundingClientRect();
+      const clone=cassette.cloneNode(true);clone.classList.add('cassette-flying');clone.style.cssText=`left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px`;
+      document.body.append(clone);cassette.style.visibility='hidden';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{clone.style.transform=`translate(${slot.left+slot.width/2-rect.left-rect.width/2}px,${slot.top-rect.top-rect.height*.55}px) scale(.36)`;clone.style.opacity='0'}));
+      setTimeout(()=>{window.location.href=cassette.href},850);
+    });
+  });
+})();
+</script>
