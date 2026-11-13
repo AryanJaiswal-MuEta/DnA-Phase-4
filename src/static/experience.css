@@ -60,6 +60,4 @@
 @media(max-width:750px){.admin-page main{padding:0}.admin-page .admin-hero{margin:0;height:100%}.admin-page .controls-section{top:60px;right:8px;bottom:8px;width:calc(100% - 16px);padding:14px}.admin-page .admin-hero .hero-content{margin-top:clamp(70px,13vh,110px)}.admin-hero-bottom{bottom:0}}
 @media(prefers-reduced-motion:reduce){.admin-page .controls-section{animation:none}}
 
-/* Let the management drawer fit its form instead of stretching downward. */
-.admin-page .controls-section{top:82px;bottom:auto;max-height:calc(100% - 94px)}
-@media(max-width:750px){.admin-page .controls-section{top:60px;bottom:auto;max-height:calc(100% - 68px)}}
+.admin-drawer-close{margin-top:24px}
