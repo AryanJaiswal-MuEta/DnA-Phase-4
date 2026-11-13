@@ -138,3 +138,7 @@
 }
 @media(max-height:700px) and (min-width:750px){.tv-room-heading{margin-top:5px}.tv-room-heading h1{font-size:clamp(25px,2.3vw,36px)}.cassette-shelf{margin-bottom:13px}.tv-screen{height:calc(100svh - 185px)}}
 @media(max-height:700px) and (min-width:750px){.tv-antenna{top:-15px;height:30px}.tv-antenna i{height:35px}.tv-slot{bottom:-11px}.tv-slot span{top:13px}}
+
+/* Use the same navigation bar as the Submit screen. */
+.home-page .submit-menu-top{position:relative;top:auto;left:auto;right:auto;width:100%;margin:0}
+@media(min-width:750px){.home-page main{height:calc(100svh - 70px)}}
